@@ -55,8 +55,8 @@
     document.querySelectorAll("[data-chars]").forEach(el => {
       SplitText.create(el, { type: "chars,words", autoSplit: true, onSplit(self) {
         el.style.visibility = "visible";
-        return gsap.from(self.chars, { yPercent: 70, rotateX: -90, opacity: 0, filter: "blur(8px)", transformOrigin: "50% 100% -30px",
-          duration: 1.1, ease, stagger: { each: 0.025, from: "start" }, delay: 0.1 });
+        return gsap.from(self.chars, { yPercent: 60, rotateX: -90, opacity: 0, transformOrigin: "50% 100% -30px",
+          duration: 0.8, ease, stagger: { each: 0.018, from: "start" } });
       } });
     });
 
@@ -80,10 +80,10 @@
     /* elementi che compaiono: salgono, si raddrizzano e si mettono a fuoco */
     ScrollTrigger.batch("[data-reveal]", {
       start: "top 97%",
-      onEnter: els => gsap.to(els.filter(e => !e.closest(".hero, .a-hero")), { opacity: 1, y: 0, rotate: 0, scale: 1, filter: "blur(0px)", duration: 0.9, ease, stagger: 0.07, overwrite: true })
+      onEnter: els => gsap.to(els.filter(e => !e.closest(".hero, .a-hero")), { opacity: 1, y: 0, duration: 0.8, ease, stagger: 0.06, overwrite: true })
     });
     document.querySelectorAll(".hero [data-reveal], .a-hero [data-reveal]").forEach(el =>
-      gsap.to(el, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease, delay: 0.25 + (+el.dataset.reveal || 0) }));
+      gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease, delay: 0.05 + (+el.dataset.reveal || 0) * 0.6 }));
 
     /* hero: zoom d'ingresso, parallasse leggera e (col mouse) profondità */
     document.querySelectorAll(".hero-media").forEach(m => {
