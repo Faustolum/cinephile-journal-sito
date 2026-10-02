@@ -603,3 +603,7 @@ footer .foot-row nav a:hover { color: var(--ink); }
 .foot-hubs span{color:var(--ink-3);text-transform:uppercase;letter-spacing:.12em;font-size:12px}
 .foot-hubs a{text-decoration:none;opacity:.85}.foot-hubs a:hover{opacity:1;text-decoration:underline}
 .hub-note{margin:48px 0 24px;color:var(--ink-3);font-size:14px}.hub-note a{color:inherit}
+/* riquadro Condividi: niente righe doppie e spazi vuoti tra domande frequenti, condividi e fonti */
+.share-box{border-top:0;border-bottom:0;margin:44px 0 0;padding:0}
+.share-box + .sources{margin-top:44px}
+.faq + .share-box{margin-top:40px}
