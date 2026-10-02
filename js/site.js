@@ -154,3 +154,53 @@
     });
   }
 })();
+
+/* ---------- ricerca istantanea (l'indice si scarica solo alla prima apertura) ---------- */
+(() => {
+  const root = document.documentElement, box = document.getElementById("search"), btn = document.querySelector(".search-btn");
+  if (!box || !btn) return;
+  const input = box.querySelector("input"), out = box.querySelector(".search-results");
+  let data = null, sel = -1;
+  const plain = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const load = () => data ? Promise.resolve(data) : fetch("cerca.json").then(r => r.json()).then(d => (data = d));
+  const open = (q) => { root.classList.add("search-open"); load().then(() => { if (q != null) input.value = q; run(); }); setTimeout(() => input.focus(), 60); };
+  const close = () => { root.classList.remove("search-open"); btn.focus(); };
+  const mark = (t, words) => { let h = esc(t); words.forEach(w => { if (w.length < 2) return; const i = plain(h).indexOf(w); if (i >= 0) h = h.slice(0, i) + "<mark>" + h.slice(i, i + w.length) + "</mark>" + h.slice(i + w.length); }); return h; };
+  function run() {
+    const q = plain(input.value.trim()); sel = -1;
+    if (!data) return;
+    if (!q) { out.innerHTML = data.slice(0, 6).map(d => row(d)).join(""); return; }
+    const words = q.split(/\s+/);
+    const hits = data.map(d => { const t = plain(d.t); let s = 0;
+        for (const w of words) { if (!d.x.includes(w)) return null; s += t.startsWith(w) ? 5 : t.includes(w) ? 3 : 1; } return [s, d]; })
+      .filter(Boolean).sort((a, b) => b[0] - a[0]).slice(0, 12).map(x => x[1]);
+    out.innerHTML = hits.length ? hits.map(d => row(d, words)).join("") : `<p class="search-empty">Nessun articolo trovato per “${esc(input.value)}”. Prova con il titolo originale o con il nome del regista.</p>`;
+  }
+  const row = (d, w) => `<a href="${d.u}"><img src="${d.i}" alt="" loading="lazy"><div><div class="r-t">${w ? mark(d.t, w) : esc(d.t)}</div><div class="r-m">${esc(d.k)} · ${esc(d.dt)}</div></div></a>`;
+  btn.addEventListener("click", () => open());
+  box.querySelector(".search-close").addEventListener("click", close);
+  box.addEventListener("click", e => { if (e.target === box || e.target.classList.contains("wrap")) close(); });
+  input.addEventListener("input", run);
+  addEventListener("keydown", e => {
+    if (e.key === "/" && !root.classList.contains("search-open") && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); open(); }
+    if (!root.classList.contains("search-open")) return;
+    const links = [...out.querySelectorAll("a")];
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); sel = Math.max(0, Math.min(links.length - 1, sel + (e.key === "ArrowDown" ? 1 : -1))); links.forEach((l, i) => l.classList.toggle("sel", i === sel)); links[sel] && links[sel].scrollIntoView({ block: "nearest" }); }
+    if (e.key === "Enter" && links.length) { e.preventDefault(); location.href = (links[sel] || links[0]).href; }
+  });
+  const q = new URLSearchParams(location.search).get("cerca");   // link dai motori di ricerca: /?cerca=…
+  if (q) open(q);
+})();
+
+/* ---------- sezioni lunghe: 24 articoli alla volta ---------- */
+document.querySelectorAll(".s-grid[data-more]").forEach(g => {
+  const cards = [...g.children], step = 24; let shown = step;
+  cards.forEach((c, i) => c.classList.toggle("is-hidden", i >= shown));
+  const wrap = document.createElement("div"); wrap.className = "more-btn";
+  wrap.innerHTML = `<button class="btn ghost" type="button">Mostra altri articoli</button>`;
+  g.after(wrap);
+  const b = wrap.querySelector("button");
+  b.addEventListener("click", () => { shown += step; cards.forEach((c, i) => { if (i < shown && c.classList.contains("is-hidden")) { c.classList.remove("is-hidden"); c.style.opacity = 1; c.style.transform = "none"; } }); if (shown >= cards.length) wrap.remove(); });
+});
