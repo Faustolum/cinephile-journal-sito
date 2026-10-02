@@ -231,18 +231,26 @@ document.querySelectorAll(".s-grid[data-more]").forEach(g => {
     const g = x.createLinearGradient(0, 0, 0, 1920); g.addColorStop(0, "rgba(11,10,10,.55)"); g.addColorStop(.45, "rgba(11,10,10,.35)"); g.addColorStop(1, "rgba(11,10,10,.96)"); x.fillStyle = g; x.fillRect(0, 0, 1080, 1920);
     // testata
     x.fillStyle = "#fff"; x.textAlign = "center"; x.font = "600 28px Inter"; x.letterSpacing = "8px"; x.fillText("THE CINEPHILE JOURNAL", 540, 250); x.letterSpacing = "0px";
-    // la scena in un riquadro 16:9 con angoli arrotondati
-    if (img) { const X = 70, Y = 330, W = 940, H = 529, s = Math.max(W / img.width, H / img.height);
+    // la scena in un riquadro (più basso di un 16:9 pieno, per lasciare spazio allo sticker del link)
+    if (img) { const X = 70, Y = 300, W = 940, H = 470, s = Math.max(W / img.width, H / img.height);
       x.save(); x.beginPath(); x.roundRect ? x.roundRect(X, Y, W, H, 22) : x.rect(X, Y, W, H); x.clip();
       x.drawImage(img, X + (W - img.width * s) / 2, Y + (H - img.height * s) / 2, img.width * s, img.height * s); x.restore();
       x.strokeStyle = "rgba(255,255,255,.14)"; x.lineWidth = 2; x.beginPath(); x.roundRect ? x.roundRect(X, Y, W, H, 22) : x.rect(X, Y, W, H); x.stroke(); }
-    // sezione, titolo, sottotitolo
-    let y = 960; x.textAlign = "left";
-    if (D.shareKicker) { x.fillStyle = "#e0301e"; x.font = "600 30px Inter"; x.letterSpacing = "6px"; x.fillText(D.shareKicker.toUpperCase(), 70, y); x.letterSpacing = "0px"; y += 40; }
-    let fs = 104; x.font = `400 ${fs}px Instrument`; let tl = righe(x, title, 940, 3);
-    if (tl.length === 3) { fs = 88; x.font = `400 ${fs}px Instrument`; tl = righe(x, title, 940, 3); }
+    // sezione e titolo
+    let y = 860; x.textAlign = "left";
+    if (D.shareKicker) { x.fillStyle = "#e0301e"; x.font = "600 28px Inter"; x.letterSpacing = "6px"; x.fillText(D.shareKicker.toUpperCase(), 70, y); x.letterSpacing = "0px"; y += 36; }
+    let fs = 96; x.font = `400 ${fs}px Instrument`; let tl = righe(x, title, 940, 2);
+    if (x.measureText(title).width > 940 * 2) { fs = 78; x.font = `400 ${fs}px Instrument`; tl = righe(x, title, 940, 3); }
     x.fillStyle = "#fff"; tl.forEach(r => { y += fs * 1.02; x.fillText(r, 70, y); });
-    if (D.shareDek) { y += 34; x.fillStyle = "rgba(243,238,233,.78)"; x.font = "italic 400 42px Instrument"; righe(x, D.shareDek, 940, 3).forEach(r => { y += 54; x.fillText(r, 70, y); }); }
+    // il nostro giudizio (frase della recensione), altrimenti il sottotitolo; sempre compatto
+    const giudizio = (D.shareQuote || "").trim();
+    if (giudizio) {
+      y += 74; x.fillStyle = "#e0301e"; x.font = "600 22px Inter"; x.letterSpacing = "5px"; x.fillText("IL NOSTRO GIUDIZIO", 70, y); x.letterSpacing = "0px";
+      x.font = "italic 400 40px Instrument"; x.fillStyle = "rgba(243,238,233,.92)";
+      const gl = righe(x, "«" + giudizio + "»", 900, 3); const top = y + 18;
+      x.fillStyle = "#e0301e"; x.fillRect(70, top, 3, gl.length * 50 + 4); x.fillStyle = "rgba(243,238,233,.92)";
+      gl.forEach(r => { y += 50; x.fillText(r, 92, y + 14); }); y += 14;
+    } else if (D.shareDek) { y += 30; x.fillStyle = "rgba(243,238,233,.78)"; x.font = "italic 400 38px Instrument"; righe(x, D.shareDek, 940, 2).forEach(r => { y += 50; x.fillText(r, 70, y); }); }
     // piede: indirizzo del sito (lo spazio sopra resta libero per lo sticker link)
     x.fillStyle = "rgba(255,255,255,.22)"; x.fillRect(70, 1712, 940, 2);
     x.fillStyle = "#fff"; x.font = "600 30px Inter"; x.letterSpacing = "5px"; x.textAlign = "center"; x.fillText("THECINEPHILEJOURNAL.IT", 540, 1772); x.letterSpacing = "0px";
