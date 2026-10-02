@@ -569,3 +569,5 @@ footer .foot-row nav a:hover { color: var(--ink); }
 .a-hero .hero-content { position: relative; bottom: auto; left: auto; right: auto; width: 100%; padding: 150px 0 clamp(56px, 10vh, 120px); }
 .a-hero h1.long { font-size: clamp(38px, 4.8vw, 78px); max-width: 20ch; }
 @media (max-width: 960px) { .a-hero .hero-content { padding-top: 120px; } .a-hero h1.long { font-size: clamp(32px, 8.5vw, 48px); } }
+/* titoli animati: la "finestra" da cui salgono le righe lascia spazio alle lettere con la gamba (g, p, q) */
+.line-mask { padding-bottom: .16em; margin-bottom: -.16em; }
