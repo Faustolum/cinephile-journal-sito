@@ -558,3 +558,9 @@ footer .foot-row nav a:hover { color: var(--ink); }
   .mod-head { flex-wrap: wrap; }
   footer .foot-row { flex-direction: column; align-items: flex-start; }
 }
+
+/* apertura della home: il riquadro cresce invece di finire sotto la barra in alto; titoli lunghi più piccoli */
+.hero { height: auto; min-height: 86svh; display: flex; align-items: flex-end; }
+.hero .hero-content { position: relative; bottom: auto; left: auto; right: auto; width: 100%; padding: 150px 0 clamp(48px, 9vh, 110px); }
+.hero .hero-title.long { font-size: clamp(40px, 5.2vw, 84px); max-width: 18ch; }
+@media (max-width: 960px) { .hero .hero-content { padding-top: 120px; } .hero .hero-title.long { font-size: clamp(34px, 9vw, 52px); } }
