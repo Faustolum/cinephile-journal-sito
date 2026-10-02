@@ -575,3 +575,24 @@ footer .foot-row nav a:hover { color: var(--ink); }
 .legal .storia{margin:8px 0 48px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,.12)}
 .legal .storia p.primo::first-letter{float:left;font-family:"Instrument",Georgia,serif;font-size:4.2em;line-height:.82;padding:6px 10px 0 0;color:var(--accent,#e0301e)}
 .legal .storia .firma{font-family:"Instrument",Georgia,serif;font-style:italic;font-size:1.25em;text-align:right;opacity:.85}
+/* telefono: la lente sta attaccata al menu, stesso cerchio, come una coppia di tasti */
+@media (max-width: 960px) {
+  .nav-links + .search-btn, .search-btn { margin-left: auto; margin-right: 0; width: 46px; height: 46px; background: rgba(255,255,255,.08); }
+  .search-btn svg { width: 19px; height: 19px; }
+}
+/* ---------- Condividi ---------- */
+.share-mini{display:inline-flex;align-items:center;gap:6px;margin-left:12px;padding:5px 12px 5px 10px;border:1px solid rgba(255,255,255,.22);border-radius:30px;background:rgba(0,0,0,.25);color:inherit;font:inherit;font-size:.92em;cursor:pointer;vertical-align:middle;transition:background .3s,border-color .3s;-webkit-tap-highlight-color:transparent}
+.share-mini:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4)}
+.share-mini svg{width:15px;height:15px}
+@media (max-width:600px){.share-mini{display:flex;width:max-content;margin:12px 0 0}}
+.share-box{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin:56px 0 8px;padding:28px 0;border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12)}
+.share-box .share-q{font-family:"Instrument",Georgia,serif;font-size:clamp(26px,3vw,34px);line-height:1.15;margin:6px 0 0}
+.share-actions{display:flex;gap:10px;flex-wrap:wrap}
+.share-actions button{display:inline-flex;align-items:center;gap:9px;padding:12px 18px;border-radius:40px;border:1px solid rgba(255,255,255,.2);background:transparent;color:inherit;font:500 15px/1 "Inter",sans-serif;cursor:pointer;transition:background .3s,border-color .3s,transform .3s;-webkit-tap-highlight-color:transparent}
+.share-actions button:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.45);transform:translateY(-1px)}
+.share-actions button:first-child{background:var(--accent,#e0301e);border-color:transparent;color:#fff}
+.share-actions button:first-child:hover{filter:brightness(1.08)}
+@media (max-width:600px){.share-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.share-actions button{justify-content:center}.share-actions button:first-child{grid-column:1/-1}}
+.share-toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#f3eee9;color:#0b0a0a;padding:11px 18px;border-radius:12px;font:600 14px "Inter",sans-serif;z-index:200;transition:opacity .3s,transform .3s;max-width:calc(100% - 32px);text-align:center}
+.share-toast.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:600px){.share-actions .lungo{display:none}}
