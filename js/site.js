@@ -209,8 +209,8 @@ document.querySelectorAll(".s-grid[data-more]").forEach(g => {
 (() => {
   const art = document.querySelector("article[data-share-url]"); if (!art) return;
   const D = art.dataset, url = D.shareUrl, title = D.shareTitle;
-  const avviso = t => { let e = document.querySelector(".share-toast"); if (!e) { e = document.createElement("div"); e.className = "share-toast"; e.setAttribute("role", "status"); document.body.appendChild(e); }
-    e.textContent = t; e.classList.add("on"); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove("on"), 2600); };
+  const avviso = (t, ms = 2600) => { let e = document.querySelector(".share-toast"); if (!e) { e = document.createElement("div"); e.className = "share-toast"; e.setAttribute("role", "status"); document.body.appendChild(e); }
+    e.textContent = t; e.classList.add("on"); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove("on"), ms); };
   const copia = async () => { try { await navigator.clipboard.writeText(url); avviso("Link copiato"); } catch { prompt("Copia il link:", url); } };
   const invia = async () => { if (navigator.share) { try { await navigator.share({ title, text: title + " – The Cinephile Journal", url }); } catch {} } else copia(); };
 
@@ -219,6 +219,8 @@ document.querySelectorAll(".s-grid[data-more]").forEach(g => {
     if (out.length > n) { out.length = n; let u = out[n - 1]; while (ctx.measureText(u + "…").width > w && u.includes(" ")) u = u.slice(0, u.lastIndexOf(" ")); out[n - 1] = u + "…"; } return out; };
 
   async function storia() {
+    // Instagram non accetta link dai siti: copiamo il link dell'articolo, così chi condivide lo incolla nello sticker "Link"
+    let copiato = false; try { await navigator.clipboard.writeText(url); copiato = true; } catch {}
     avviso("Preparo l'immagine…");
     await Promise.all(["600 30px Inter", "400 100px Instrument", "italic 400 40px Instrument"].map(f => document.fonts.load(f).catch(() => {})));
     const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = D.shareImg; }).catch(() => null);
@@ -246,9 +248,10 @@ document.querySelectorAll(".s-grid[data-more]").forEach(g => {
     x.fillStyle = "#fff"; x.font = "600 30px Inter"; x.letterSpacing = "5px"; x.textAlign = "center"; x.fillText("THECINEPHILEJOURNAL.IT", 540, 1772); x.letterSpacing = "0px";
     const blob = await new Promise(r => c.toBlob(r, "image/png"));
     const nome = (url.split("/").pop() || "articolo") + "-storia.png", file = new File([blob], nome, { type: "image/png" });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title }); } catch {} return; }
+    const guida = (copiato ? "Link copiato. " : "") + "In Instagram tocca l'icona degli sticker → Link → incolla il link dell'articolo.";
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { avviso(guida, 9000); try { await navigator.share({ files: [file], title }); } catch {} avviso(guida, 9000); return; }
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nome; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    avviso("Immagine scaricata: caricala nelle tue storie e aggiungi il link");
+    avviso("Immagine scaricata: caricala nelle tue storie. " + guida, 9000);
   }
 
   document.addEventListener("click", e => { const b = e.target.closest("[data-share]"); if (!b) return; const k = b.dataset.share;
