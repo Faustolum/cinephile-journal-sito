@@ -218,10 +218,11 @@ document.querySelectorAll(".s-grid[data-more]").forEach(g => {
   const righe = (ctx, t, w, n) => { const out = []; let r = ""; for (const p of t.split(/\s+/)) { const prova = r ? r + " " + p : p; if (ctx.measureText(prova).width > w && r) { out.push(r); r = p; } else r = prova; } if (r) out.push(r);
     if (out.length > n) { out.length = n; let u = out[n - 1]; while (ctx.measureText(u + "…").width > w && u.includes(" ")) u = u.slice(0, u.lastIndexOf(" ")); out[n - 1] = u + "…"; } return out; };
 
-  async function storia() {
-    // Instagram non accetta link dai siti: copiamo il link dell'articolo, così chi condivide lo incolla nello sticker "Link"
-    let copiato = false; try { await navigator.clipboard.writeText(url); copiato = true; } catch {}
-    avviso("Preparo l'immagine…");
+  // copia sincrona (non consuma il "tocco" che serve al menu di condivisione su iPhone)
+  const copiaSubito = () => { try { const t = document.createElement("textarea"); t.value = url; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;top:-100px;opacity:0";
+    document.body.appendChild(t); t.select(); t.setSelectionRange(0, url.length); const ok = document.execCommand("copy"); t.remove(); return ok; } catch { return false; } };
+  let pronta = null;   // l'immagine viene preparata in anticipo, così al tocco si apre subito Instagram
+  async function creaImmagine() {
     await Promise.all(["600 30px Inter", "400 100px Instrument", "italic 400 40px Instrument"].map(f => document.fonts.load(f).catch(() => {})));
     const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = D.shareImg; }).catch(() => null);
     const c = document.createElement("canvas"); c.width = 1080; c.height = 1920; const x = c.getContext("2d");
@@ -255,10 +256,26 @@ document.querySelectorAll(".s-grid[data-more]").forEach(g => {
     x.fillStyle = "rgba(255,255,255,.22)"; x.fillRect(70, 1712, 940, 2);
     x.fillStyle = "#fff"; x.font = "600 30px Inter"; x.letterSpacing = "5px"; x.textAlign = "center"; x.fillText("THECINEPHILEJOURNAL.IT", 540, 1772); x.letterSpacing = "0px";
     const blob = await new Promise(r => c.toBlob(r, "image/png"));
-    const nome = (url.split("/").pop() || "articolo") + "-storia.png", file = new File([blob], nome, { type: "image/png" });
+    const nome = (url.split("/").pop() || "articolo") + "-storia.png";
+    return { blob, nome, file: new File([blob], nome, { type: "image/png" }) };
+  }
+  function prepara() { if (!pronta) pronta = creaImmagine().catch(() => null); return pronta; }
+  // preparazione silenziosa: quando il lettore è a metà articolo o vicino ai tasti di condivisione
+  const box = document.getElementById("condividi");
+  if ("IntersectionObserver" in window && box) { const io = new IntersectionObserver(e => { if (e.some(x => x.isIntersecting)) { prepara(); io.disconnect(); } }, { rootMargin: "1200px 0px" }); io.observe(box); }
+  (window.requestIdleCallback || (f => setTimeout(f, 2500)))(() => prepara());
+
+  let risultato = null; prepara().then(r => { risultato = r; });
+  async function storia() {
+    const copiato = copiaSubito();
     const guida = (copiato ? "Link copiato. " : "") + "In Instagram tocca l'icona degli sticker → Link → incolla il link dell'articolo.";
-    if (navigator.canShare && navigator.canShare({ files: [file] })) { avviso(guida, 9000); try { await navigator.share({ files: [file], title }); } catch {} avviso(guida, 9000); return; }
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nome; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    // se l'immagine è già pronta, il menu di condivisione si apre nello stesso tocco (necessario su iPhone)
+    if (risultato && navigator.canShare && navigator.canShare({ files: [risultato.file] })) {
+      avviso(guida, 9000); navigator.share({ files: [risultato.file], title }).catch(() => {}); return; }
+    avviso("Preparo l'immagine…");
+    const r = await prepara(); if (!r) { avviso("Immagine non disponibile, riprova tra un momento"); return; } risultato = r;
+    if (navigator.canShare && navigator.canShare({ files: [r.file] })) { avviso("Immagine pronta: tocca di nuovo «Nella tua storia»", 6000); return; }
+    const a = document.createElement("a"); a.href = URL.createObjectURL(r.blob); a.download = r.nome; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     avviso("Immagine scaricata: caricala nelle tue storie. " + guida, 9000);
   }
 
