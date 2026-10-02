@@ -596,3 +596,10 @@ footer .foot-row nav a:hover { color: var(--ink); }
 .share-toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#f3eee9;color:#0b0a0a;padding:11px 18px;border-radius:12px;font:600 14px "Inter",sans-serif;z-index:200;transition:opacity .3s,transform .3s;max-width:calc(100% - 32px);text-align:center}
 .share-toast.on{opacity:1;transform:translate(-50%,0)}
 @media (max-width:600px){.share-actions .lungo{display:none}}
+/* piattaforme: link nella scheda dell'articolo, riga nel footer, nota nelle pagine */
+.hub-link{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:12px 16px;border:1px solid rgba(255,255,255,.14);border-radius:12px;font-size:14px;text-decoration:none;transition:border-color .3s,background .3s}
+.hub-link:hover{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.04)}
+.foot-hubs{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;padding-top:18px;padding-bottom:6px;font-size:14px}
+.foot-hubs span{color:var(--ink-3);text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+.foot-hubs a{text-decoration:none;opacity:.85}.foot-hubs a:hover{opacity:1;text-decoration:underline}
+.hub-note{margin:48px 0 24px;color:var(--ink-3);font-size:14px}.hub-note a{color:inherit}
