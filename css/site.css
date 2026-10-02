@@ -609,3 +609,10 @@ footer .foot-row nav a:hover { color: var(--ink); }
 .faq + .share-box{margin-top:40px}
 /* inquadratura della foto di apertura sul telefono: "hero_pos" dell'articolo (es. "18% 50%"), centro se assente */
 .a-hero .hero-media img{object-position:var(--fuoco,50% 50%)}
+/* telefono: scheda senza locandina a tutta larghezza; meno vuoto tra apertura e testo; link alla piattaforma visibile */
+@media (max-width: 960px) {
+  .a-side .sticky.senza-poster { grid-template-columns: 1fr; }
+  .a-side .sticky > .hub-link { display: flex; grid-column: 1 / -1; margin-top: 4px; }
+  .a-hero .hero-content { padding-bottom: 36px; }
+  .a-grid { padding-top: 28px; }
+}
