@@ -607,3 +607,5 @@ footer .foot-row nav a:hover { color: var(--ink); }
 .share-box{border-top:0;border-bottom:0;margin:44px 0 0;padding:0}
 .share-box + .sources{margin-top:44px}
 .faq + .share-box{margin-top:40px}
+/* inquadratura della foto di apertura sul telefono: "hero_pos" dell'articolo (es. "18% 50%"), centro se assente */
+.a-hero .hero-media img{object-position:var(--fuoco,50% 50%)}
