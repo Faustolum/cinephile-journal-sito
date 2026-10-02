@@ -571,3 +571,7 @@ footer .foot-row nav a:hover { color: var(--ink); }
 @media (max-width: 960px) { .a-hero .hero-content { padding-top: 120px; } .a-hero h1.long { font-size: clamp(32px, 8.5vw, 48px); } }
 /* titoli animati: la "finestra" da cui salgono le righe lascia spazio alle lettere con la gamba (g, p, q) */
 .line-mask { padding-bottom: .16em; margin-bottom: -.16em; }
+/* "La nostra storia" in Chi siamo */
+.legal .storia{margin:8px 0 48px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,.12)}
+.legal .storia p.primo::first-letter{float:left;font-family:"Instrument",Georgia,serif;font-size:4.2em;line-height:.82;padding:6px 10px 0 0;color:var(--accent,#e0301e)}
+.legal .storia .firma{font-family:"Instrument",Georgia,serif;font-style:italic;font-size:1.25em;text-align:right;opacity:.85}
