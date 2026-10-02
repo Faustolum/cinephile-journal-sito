@@ -204,3 +204,54 @@ document.querySelectorAll(".s-grid[data-more]").forEach(g => {
   const b = wrap.querySelector("button");
   b.addEventListener("click", () => { shown += step; cards.forEach((c, i) => { if (i < shown && c.classList.contains("is-hidden")) { c.classList.remove("is-hidden"); c.style.opacity = 1; c.style.transform = "none"; } }); if (shown >= cards.length) wrap.remove(); });
 });
+
+/* ---------- Condividi: storia Instagram, invio a un amico, copia link ---------- */
+(() => {
+  const art = document.querySelector("article[data-share-url]"); if (!art) return;
+  const D = art.dataset, url = D.shareUrl, title = D.shareTitle;
+  const avviso = t => { let e = document.querySelector(".share-toast"); if (!e) { e = document.createElement("div"); e.className = "share-toast"; e.setAttribute("role", "status"); document.body.appendChild(e); }
+    e.textContent = t; e.classList.add("on"); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove("on"), 2600); };
+  const copia = async () => { try { await navigator.clipboard.writeText(url); avviso("Link copiato"); } catch { prompt("Copia il link:", url); } };
+  const invia = async () => { if (navigator.share) { try { await navigator.share({ title, text: title + " – The Cinephile Journal", url }); } catch {} } else copia(); };
+
+  // a capo per parole entro una larghezza, al massimo n righe (con … sull'ultima)
+  const righe = (ctx, t, w, n) => { const out = []; let r = ""; for (const p of t.split(/\s+/)) { const prova = r ? r + " " + p : p; if (ctx.measureText(prova).width > w && r) { out.push(r); r = p; } else r = prova; } if (r) out.push(r);
+    if (out.length > n) { out.length = n; let u = out[n - 1]; while (ctx.measureText(u + "…").width > w && u.includes(" ")) u = u.slice(0, u.lastIndexOf(" ")); out[n - 1] = u + "…"; } return out; };
+
+  async function storia() {
+    avviso("Preparo l'immagine…");
+    await Promise.all(["600 30px Inter", "400 100px Instrument", "italic 400 40px Instrument"].map(f => document.fonts.load(f).catch(() => {})));
+    const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = D.shareImg; }).catch(() => null);
+    const c = document.createElement("canvas"); c.width = 1080; c.height = 1920; const x = c.getContext("2d");
+    // fondo: la scena ingrandita e scurita, poi nero in basso
+    x.fillStyle = "#0b0a0a"; x.fillRect(0, 0, 1080, 1920);
+    if (img) { const s = Math.max(1080 / img.width, 1920 / img.height) * 1.15; x.globalAlpha = .28; x.drawImage(img, (1080 - img.width * s) / 2, (1920 - img.height * s) / 2, img.width * s, img.height * s); x.globalAlpha = 1; }
+    const g = x.createLinearGradient(0, 0, 0, 1920); g.addColorStop(0, "rgba(11,10,10,.55)"); g.addColorStop(.45, "rgba(11,10,10,.35)"); g.addColorStop(1, "rgba(11,10,10,.96)"); x.fillStyle = g; x.fillRect(0, 0, 1080, 1920);
+    // testata
+    x.fillStyle = "#fff"; x.textAlign = "center"; x.font = "600 28px Inter"; x.letterSpacing = "8px"; x.fillText("THE CINEPHILE JOURNAL", 540, 250); x.letterSpacing = "0px";
+    // la scena in un riquadro 16:9 con angoli arrotondati
+    if (img) { const X = 70, Y = 330, W = 940, H = 529, s = Math.max(W / img.width, H / img.height);
+      x.save(); x.beginPath(); x.roundRect ? x.roundRect(X, Y, W, H, 22) : x.rect(X, Y, W, H); x.clip();
+      x.drawImage(img, X + (W - img.width * s) / 2, Y + (H - img.height * s) / 2, img.width * s, img.height * s); x.restore();
+      x.strokeStyle = "rgba(255,255,255,.14)"; x.lineWidth = 2; x.beginPath(); x.roundRect ? x.roundRect(X, Y, W, H, 22) : x.rect(X, Y, W, H); x.stroke(); }
+    // sezione, titolo, sottotitolo
+    let y = 960; x.textAlign = "left";
+    if (D.shareKicker) { x.fillStyle = "#e0301e"; x.font = "600 30px Inter"; x.letterSpacing = "6px"; x.fillText(D.shareKicker.toUpperCase(), 70, y); x.letterSpacing = "0px"; y += 40; }
+    let fs = 104; x.font = `400 ${fs}px Instrument`; let tl = righe(x, title, 940, 3);
+    if (tl.length === 3) { fs = 88; x.font = `400 ${fs}px Instrument`; tl = righe(x, title, 940, 3); }
+    x.fillStyle = "#fff"; tl.forEach(r => { y += fs * 1.02; x.fillText(r, 70, y); });
+    if (D.shareDek) { y += 34; x.fillStyle = "rgba(243,238,233,.78)"; x.font = "italic 400 42px Instrument"; righe(x, D.shareDek, 940, 3).forEach(r => { y += 54; x.fillText(r, 70, y); }); }
+    // piede: indirizzo del sito (lo spazio sopra resta libero per lo sticker link)
+    x.fillStyle = "rgba(255,255,255,.22)"; x.fillRect(70, 1712, 940, 2);
+    x.fillStyle = "#fff"; x.font = "600 30px Inter"; x.letterSpacing = "5px"; x.textAlign = "center"; x.fillText("THECINEPHILEJOURNAL.IT", 540, 1772); x.letterSpacing = "0px";
+    const blob = await new Promise(r => c.toBlob(r, "image/png"));
+    const nome = (url.split("/").pop() || "articolo") + "-storia.png", file = new File([blob], nome, { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title }); } catch {} return; }
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nome; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    avviso("Immagine scaricata: caricala nelle tue storie e aggiungi il link");
+  }
+
+  document.addEventListener("click", e => { const b = e.target.closest("[data-share]"); if (!b) return; const k = b.dataset.share;
+    if (k === "storia") storia(); else if (k === "invia") invia(); else if (k === "copia") copia();
+    else if (k === "menu") { if (navigator.share) invia(); else document.getElementById("condividi").scrollIntoView({ behavior: "smooth", block: "center" }); } });
+})();
