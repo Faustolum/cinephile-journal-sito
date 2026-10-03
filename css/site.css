@@ -616,3 +616,9 @@ footer .foot-row nav a:hover { color: var(--ink); }
   .a-hero .hero-content { padding-bottom: 36px; }
   .a-grid { padding-top: 28px; }
 }
+/* telefono: carosello "Al cinema questo mese" fluido (aggancio morbido, niente effetti al tocco) */
+@media (max-width: 960px) {
+  .showing-grid { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+  .showing-grid .ticket-media img { transition: none; }
+  .ticket:hover .ticket-media img { transform: none; }
+}
