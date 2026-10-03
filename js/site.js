@@ -99,7 +99,9 @@
     /* locandine "al cinema": arrivano come un mazzo di biglietti che si apre */
     document.querySelectorAll(".showing-grid").forEach(g => {
       const items = [...g.children], mid = (items.length - 1) / 2;
-      gsap.from(items, { y: 120, x: (i) => (mid - i) * 40, rotate: (i) => (i - mid) * 5, opacity: 0, scale: 0.9, duration: 1.2, ease, stagger: 0.06,
+      // sul telefono il carosello si scorre col dito: solo una comparsa leggera, niente trasformazioni che restano attaccate
+      if (matchMedia("(max-width: 960px)").matches) { gsap.from(items, { opacity: 0, y: 24, duration: 0.6, ease, stagger: 0.05, clearProps: "transform,opacity", scrollTrigger: { trigger: g, start: "top 92%" } }); return; }
+      gsap.from(items, { y: 120, x: (i) => (mid - i) * 40, rotate: (i) => (i - mid) * 5, opacity: 0, scale: 0.9, duration: 1.2, ease, stagger: 0.06, clearProps: "transform,opacity",
         scrollTrigger: { trigger: g, start: "top 90%" } });
     });
 
