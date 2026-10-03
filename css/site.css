@@ -650,3 +650,24 @@ footer .foot-bottom a { color: var(--ink-2, #c7c7cc); text-decoration: none; } f
 .legal .cf-esito.si { color: #5fd38a; }
 .legal .cf-esito.no { color: #ff7a72; }
 @media (max-width: 640px) { .contact-form .cf-row { grid-template-columns: 1fr; } .contact-form .btn { justify-self: stretch; justify-content: center; } }
+.contact-form { transition: opacity .35s var(--ease), transform .35s var(--ease); }
+.contact-form.via { opacity: 0; transform: translateY(-12px) scale(.98); }
+.cf-grazie { margin: 34px 0 40px; padding: clamp(28px, 5vw, 56px); text-align: center; border-radius: var(--radius); border: 1px solid rgba(224,48,42,.35);
+  background: radial-gradient(120% 90% at 50% 0%, rgba(224,48,42,.22), transparent 60%), var(--bg-2); outline: none;
+  opacity: 0; transform: translateY(16px) scale(.98); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.cf-grazie.on { opacity: 1; transform: none; }
+.cf-check { width: 84px; height: 84px; margin: 0 auto 18px; display: block; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.cf-check circle { stroke: var(--accent); stroke-width: 4; stroke-dasharray: 227; stroke-dashoffset: 227; transform: rotate(-90deg); transform-origin: center; }
+.cf-check path { stroke: var(--ink); stroke-width: 5; stroke-dasharray: 48; stroke-dashoffset: 48; }
+.cf-grazie.on .cf-check circle { animation: cf-draw .7s .15s var(--ease) forwards; }
+.cf-grazie.on .cf-check path { animation: cf-draw .45s .75s var(--ease) forwards; }
+@keyframes cf-draw { to { stroke-dashoffset: 0; } }
+.legal .cf-grazie h2 { font: 700 clamp(34px, 5vw, 54px)/1 "Inter"; letter-spacing: -.04em; margin: 12px 0 16px; }
+.legal .cf-grazie p { margin: 0 auto 10px; max-width: 520px; }
+.legal .cf-grazie .cf-intanto { margin-top: 26px; font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.cf-azioni { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 14px; }
+.legal .cf-azioni a { text-decoration: none; }
+.legal .cf-azioni .btn { color: var(--bg); } .legal .cf-azioni .btn.ghost { color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .contact-form, .cf-grazie { transition: none; } .cf-check circle, .cf-check path { animation: none !important; stroke-dashoffset: 0; } }
+@media (max-width: 640px) { .cf-azioni .btn { width: 100%; justify-content: center; } }
+.contact-form[hidden], .cf-grazie[hidden] { display: none; }
