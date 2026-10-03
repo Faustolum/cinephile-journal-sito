@@ -622,3 +622,14 @@ footer .foot-row nav a:hover { color: var(--ink); }
   .showing-grid .ticket-media img { transition: none; }
   .ticket:hover .ticket-media img { transform: none; }
 }
+/* footer essenziale (2026-10-03): logo + icone social, una riga di link, copyright */
+footer .foot-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 44px; padding-bottom: 22px; }
+footer .foot-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; padding-bottom: 40px; font-size: 13px; color: var(--ink-3); }
+footer .foot-bottom nav { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+footer .foot-bottom a { color: var(--ink-2, #c7c7cc); text-decoration: none; } footer .foot-bottom a:hover { color: #fff; }
+.foot-social, .about-social { display: flex; gap: 10px; }
+.foot-social a, .about-social a { display: inline-flex; align-items: center; justify-content: center; gap: 10px; color: #fff; text-decoration: none; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); transition: background .3s, border-color .3s; }
+.foot-social a { width: 44px; height: 44px; } .foot-social a span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.foot-social a:hover, .about-social a:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.4); }
+.about-social { margin-top: 14px; } .about-social a { padding: 11px 18px 11px 14px; font: 500 15px "Inter", sans-serif; }
+.foot-row, .foot-copy, .foot-hubs { display: none; }
