@@ -671,3 +671,6 @@ footer .foot-bottom a { color: var(--ink-2, #c7c7cc); text-decoration: none; } f
 @media (prefers-reduced-motion: reduce) { .contact-form, .cf-grazie { transition: none; } .cf-check circle, .cf-check path { animation: none !important; stroke-dashoffset: 0; } }
 @media (max-width: 640px) { .cf-azioni .btn { width: 100%; justify-content: center; } }
 .contact-form[hidden], .cf-grazie[hidden] { display: none; }
+/* attribuzione TMDB (obbligatoria per le regole d'uso delle API) */
+.foot-tmdb { display: flex; align-items: center; gap: 12px; padding-top: 14px; padding-bottom: 28px; font-size: 12px; line-height: 1.5; color: var(--ink-3); }
+.foot-tmdb img { flex: none; width: 72px; height: auto; opacity: .8; }
