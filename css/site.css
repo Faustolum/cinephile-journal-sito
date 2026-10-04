@@ -678,3 +678,5 @@ footer .foot-bottom a { color: var(--ink-2, #c7c7cc); text-decoration: none; } f
 /* avviso spoiler (articoli «finale spiegato», campo "spoiler": true) */
 .spoiler-avviso { margin: 0 0 28px; padding: 16px 20px; border-radius: 14px; background: rgba(224,48,42,.12); border: 1px solid rgba(224,48,42,.45); color: var(--ink); font-size: 16px; line-height: 1.5; }
 .spoiler-avviso strong { color: #ff6b63; }
+
+.byline .aggiornato{color:#f5b84b;white-space:nowrap}
