@@ -108,6 +108,12 @@ footer { padding: 70px 0 40px; border-top: 1px solid var(--line); }
 .pull { margin: 2.4em 0; font: 400 clamp(40px, 5vw, 76px)/1 "Instrument", serif; font-style: italic; letter-spacing: -.02em; color: var(--ink); }
 .pull::before { content: "“"; color: var(--accent); }
 .pull::after { content: "”"; color: var(--accent); }
+.pull-nostra::before, .pull-nostra::after { content: none; }
+.pull-nostra { border-left: 3px solid var(--accent); padding-left: .6em; }
+.pull-nostra .kicker { display: block; margin-bottom: .6em; font: 600 13px/1 system-ui, sans-serif; font-style: normal; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.pull-cit { margin: 2.4em 0; }
+.pull-cit .pull { margin: 0 0 .5em; }
+.pull-cit figcaption { font: 600 14px/1.3 system-ui, sans-serif; color: var(--ink); opacity: .7; }
 .verdict { margin: 3em 0 1em; padding: clamp(28px, 4vw, 48px); border-radius: var(--radius); background: linear-gradient(160deg, var(--bg-3), var(--bg-2)); box-shadow: inset 0 0 0 1px var(--line); }
 .verdict .kicker { display: block; margin-bottom: 18px; }
 .verdict p { margin: 0; font: 500 clamp(21px, 1.8vw, 26px)/1.5 "Inter"; letter-spacing: -.012em; color: var(--ink); }
