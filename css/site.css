@@ -687,3 +687,14 @@ footer .foot-bottom a { color: var(--ink-2, #c7c7cc); text-decoration: none; } f
 .spoiler-avviso strong { color: #ff6b63; }
 
 .byline .aggiornato{color:#f5b84b;white-space:nowrap}
+
+/* riquadro finale: invito a seguirci (+ newsletter, solo se in sito.json c'è "newsletter_url") */
+.related { padding-bottom: 56px; }
+.cta-finale { padding: 8px 0 96px; }
+.cta-finale .wrap { padding-top: 36px; border-top: 1px solid var(--line); text-align: center; }
+.cta-finale .cta-q { font-family: "Instrument", Georgia, serif; font-size: clamp(26px, 4vw, 38px); line-height: 1.2; margin: 8px 0 0; overflow-wrap: anywhere; }
+.cta-finale .cta-q a { text-decoration: underline; text-underline-offset: 5px; }
+.cta-news { margin: 28px auto 0; max-width: 460px; }
+.cta-news label { display: block; margin-bottom: 10px; font-size: 16px; opacity: .8; }
+.cta-news div { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.cta-news input { flex: 1 1 220px; min-height: 48px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: inherit; font-size: 16px; }
