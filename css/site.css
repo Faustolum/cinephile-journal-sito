@@ -545,7 +545,8 @@ img { height: auto; }
 /* Seguici: una riga sola, centrata */
 .follow { padding: clamp(80px, 12vh, 140px) 0; }
 .follow .big { font: 700 clamp(34px, 4.4vw, 64px)/1.05 "Inter"; letter-spacing: -.04em; margin: 0 0 12px; }
-.follow .sub { margin-bottom: 28px; }
+.follow .sub { margin-bottom: 28px; max-width: 52ch; }
+.follow .sub a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 
 /* piè di pagina sobrio */
 footer { padding: 34px 0 30px; border-top: 1px solid var(--line); }
