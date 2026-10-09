@@ -698,3 +698,12 @@ footer .foot-bottom a { color: var(--ink-2, #c7c7cc); text-decoration: none; } f
 .cta-news label { display: block; margin-bottom: 10px; font-size: 16px; opacity: .8; }
 .cta-news div { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .cta-news input { flex: 1 1 220px; min-height: 48px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: inherit; font-size: 16px; }
+
+/* ---- Rifiniture dalle regole «craft floor» di Impeccable (9/10/2026): le parti del browser che non disegniamo portano comunque il design ---- */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+:focus:not(:focus-visible) { outline: none; }
+input, textarea { caret-color: var(--accent); }
+html { scrollbar-color: #3a3a3f var(--bg); }
+h1, h2, h3, .hero-title { text-wrap: balance; }
+p, li, .dek, figcaption { text-wrap: pretty; }
+time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric: tabular-nums; }
