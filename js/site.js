@@ -179,7 +179,7 @@
       .filter(Boolean).sort((a, b) => b[0] - a[0]).slice(0, 12).map(x => x[1]);
     out.innerHTML = hits.length ? hits.map(d => row(d, words)).join("") : `<p class="search-empty">Nessun articolo trovato per “${esc(input.value)}”. Prova con il titolo originale o con il nome del regista.</p>`;
   }
-  const row = (d, w) => `<a href="${d.u}"><img src="${d.i}" alt="" loading="lazy"><div><div class="r-t">${w ? mark(d.t, w) : esc(d.t)}</div><div class="r-m">${esc(d.k)} · ${esc(d.dt)}</div></div></a>`;
+  const row = (d, w) => `<a href="${d.u}"><img src="${d.i}" alt="" loading="lazy"><div><div class="r-t">${w ? mark(d.t, w) : esc(d.t)}</div><div class="r-m">${esc(d.k)}${d.dt ? " · " + esc(d.dt) : ""}</div></div></a>`;
   btn.addEventListener("click", () => open());
   box.querySelector(".search-close").addEventListener("click", close);
   box.addEventListener("click", e => { if (e.target === box || e.target.classList.contains("wrap")) close(); });
