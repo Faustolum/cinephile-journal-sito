@@ -753,3 +753,5 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
 @media (prefers-reduced-motion: reduce) {
   .hero .hero-media, .a-hero .hero-media, .hero .hero-media img, .a-hero .hero-media img, .js .hero .hero-title, .js .hero h1, .js .a-hero h1, .js .hero [data-reveal], .js .a-hero [data-reveal] { animation: none !important; opacity: 1 !important; visibility: visible !important; }
 }
+/* il titolo d'apertura aspetta il carattere del sito (al massimo 1,2 s, script in testa alla pagina): niente salto da 2 a 3 righe sulla rete lenta */
+.js:not(.fonti) .hero .hero-title, .js:not(.fonti) .a-hero h1 { visibility: hidden !important; animation: none !important; }
