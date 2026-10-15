@@ -51,12 +51,15 @@
   document.fonts.ready.then(() => ScrollTrigger.refresh());
   (() => {
 
-    /* titolo d'apertura: lettere che ruotano in 3D e si mettono a fuoco */
+    /* titolo d'apertura (15/10/2026): parole che salgono da una maschera, leggibile in meno di un secondo
+       (prima le lettere ruotavano in 3D una per una e il titolo restava illeggibile per più di un secondo) */
     document.querySelectorAll("[data-chars]").forEach(el => {
-      SplitText.create(el, { type: "chars,words", autoSplit: true, onSplit(self) {
+      SplitText.create(el, { type: "words", mask: "words", autoSplit: true, onSplit(self) {
         el.style.visibility = "visible";
-        return gsap.from(self.chars, { yPercent: 60, rotateX: -90, opacity: 0, transformOrigin: "50% 100% -30px",
-          duration: 0.8, ease, stagger: { each: 0.018, from: "start" } });
+        // la maschera ha un po' di spazio sotto (g, p, parentesi) e a fine animazione non taglia più niente
+        (self.masks || []).forEach(m => { m.style.paddingBottom = ".16em"; m.style.marginBottom = "-.16em"; });
+        return gsap.from(self.words, { yPercent: 120, duration: 0.7, ease, stagger: 0.035, delay: 0.05,
+          onComplete: () => (self.masks || []).forEach(m => { m.style.overflow = "visible"; }) });
       } });
     });
 
@@ -89,6 +92,9 @@
     document.querySelectorAll(".hero-media").forEach(m => {
       const img = m.querySelector("img"), sec = m.parentElement;
       gsap.fromTo(img, { scale: 1.12 }, { scale: 1.02, duration: 2.2, ease });
+      // il momento firma (15/10/2026): l'immagine si apre come uno schermo panoramico che diventa a tutta pagina.
+      // L'immagine è visibile da subito (nessuna attesa) e la parallasse sotto non cambia.
+      gsap.fromTo(m, { clipPath: "inset(17% 0% 17% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.5, ease: "expo.inOut", delay: 0.05, clearProps: "clipPath" });
       gsap.to(m, { yPercent: 12, ease: "none", scrollTrigger: { trigger: sec, start: "top top", end: "bottom top", scrub: true } });
       if (mouse) {
         const xTo = gsap.quickTo(img, "x", { duration: 1.2, ease: "power3" }), yTo = gsap.quickTo(img, "y", { duration: 1.2, ease: "power3" });
