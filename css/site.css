@@ -707,3 +707,19 @@ html { scrollbar-color: #3a3a3f var(--bg); }
 h1, h2, h3, .hero-title { text-wrap: balance; }
 p, li, .dek, figcaption { text-wrap: pretty; }
 time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric: tabular-nums; }
+
+/* ===== 15/10/2026 — rivista moderna: titoli di sezione editoriali, apertura leggibile sul telefono ===== */
+/* titoli di sezione in stile rivista: il serif della testata (Instrument), grande e sottile, con il rosso solo sul filo */
+.mod-title { font: 400 clamp(40px, 4.4vw, 68px)/1 "Instrument", Georgia, serif; letter-spacing: -.02em; }
+.mod-head { position: relative; border-bottom-color: var(--line); }
+.mod-head::after { content: ""; position: absolute; left: 0; bottom: -1px; width: 56px; height: 1px; background: var(--accent); transform-origin: left; transition: width .8s var(--ease); }
+.mod-head:hover::after { width: 120px; }
+.mod-head .link { display: inline-flex; align-items: center; gap: 6px; }
+.mod-head .link:hover { color: var(--ink); }
+/* telefono: il titolo d'apertura sta sopra la scena, quindi la parte bassa si scurisce di più e il testo ha un'ombra morbida */
+@media (max-width: 760px) {
+  .hero::after { background: linear-gradient(180deg, rgba(10,10,11,.55) 0%, rgba(10,10,11,0) 22%, rgba(10,10,11,.35) 42%, rgba(10,10,11,.9) 68%, var(--bg) 100%); }
+  .a-hero::after { background: linear-gradient(180deg, rgba(10,10,11,.5) 0%, transparent 22%, rgba(10,10,11,.55) 48%, rgba(10,10,11,.92) 75%, var(--bg) 100%); }
+  .hero h1, .hero .hero-title, .a-hero h1 { text-shadow: 0 2px 24px rgba(0,0,0,.55); }
+  .mod-title { font-size: clamp(36px, 10vw, 44px); }
+}
