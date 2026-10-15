@@ -732,3 +732,7 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
   .tiles .tile { transition: box-shadow .6s var(--ease); } .tiles .tile:hover { box-shadow: 0 30px 60px -28px rgba(0,0,0,.9); }
 }
 @media (prefers-reduced-motion: reduce) { .rows .row:hover .row-img, .tcards .tcard:hover { transform: none !important; } }
+/* fondi rossi con testo bianco: rosso più scuro (contrasto 5:1); il rosso acceso resta per testi e linee */
+:root { --accent-fondo: #d42d20; }
+.btn:hover, .share-actions button:first-child { background: var(--accent-fondo); }
+::selection { background: var(--accent-fondo); }
