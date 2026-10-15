@@ -736,3 +736,20 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
 :root { --accent-fondo: #d42d20; }
 .btn:hover, .share-actions button:first-child { background: var(--accent-fondo); }
 ::selection { background: var(--accent-fondo); }
+
+/* ===== APERTURA (15/10/2026, v3): animata dal CSS, parte al primo disegno della pagina, mai due volte =====
+   Schermo panoramico che si apre, scena che si avvicina, titolo che si scopre dal basso, poi sottotitolo e tasti.
+   Usa clip-path, scale e translate (non transform), così non si scontra con il 3D di GSAP durante lo scorrimento. */
+@keyframes tcj-schermo { from { clip-path: inset(17% 0% 17% 0%); } to { clip-path: inset(0% 0% 0% 0%); } }
+@keyframes tcj-avvicina { from { scale: 1.12; } to { scale: 1.02; } }
+@keyframes tcj-sipario { from { clip-path: inset(0% 0% 100% 0%); translate: 0 26px; } to { clip-path: inset(0% 0% -25% 0%); translate: 0 0; } }
+@keyframes tcj-sale { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
+.hero .hero-media, .a-hero .hero-media { animation: tcj-schermo 1.5s cubic-bezier(.87,0,.13,1) both; }
+.hero .hero-media img, .a-hero .hero-media img { animation: tcj-avvicina 2.2s cubic-bezier(.16,1,.3,1) both; }
+.js .hero .hero-title, .js .hero h1, .js .a-hero h1 { visibility: visible !important; animation: tcj-sipario .9s cubic-bezier(.16,1,.3,1) .12s both !important; }
+.js .hero [data-reveal], .js .a-hero [data-reveal] { opacity: 1; transform: none; animation: tcj-sale .8s cubic-bezier(.16,1,.3,1) .38s both !important; }
+.js .hero .kicker[data-reveal], .js .a-hero .crumbs[data-reveal] { animation-delay: .05s !important; }
+.js .hero .hero-actions[data-reveal], .js .a-hero .share-mini[data-reveal] { animation-delay: .5s !important; }
+@media (prefers-reduced-motion: reduce) {
+  .hero .hero-media, .a-hero .hero-media, .hero .hero-media img, .a-hero .hero-media img, .js .hero .hero-title, .js .hero h1, .js .a-hero h1, .js .hero [data-reveal], .js .a-hero [data-reveal] { animation: none !important; opacity: 1 !important; visibility: visible !important; }
+}
