@@ -51,21 +51,17 @@
   document.fonts.ready.then(() => ScrollTrigger.refresh());
   (() => {
 
-    /* titolo d'apertura (15/10/2026): parole che salgono da una maschera, leggibile in meno di un secondo
-       (prima le lettere ruotavano in 3D una per una e il titolo restava illeggibile per più di un secondo) */
-    document.querySelectorAll("[data-chars]").forEach(el => {
-      SplitText.create(el, { type: "words", mask: "words", autoSplit: true, onSplit(self) {
-        el.style.visibility = "visible";
-        // la maschera ha un po' di spazio sotto (g, p, parentesi) e a fine animazione non taglia più niente
-        (self.masks || []).forEach(m => { m.style.paddingBottom = ".16em"; m.style.marginBottom = "-.16em"; });
-        return gsap.from(self.words, { yPercent: 120, duration: 0.7, ease, stagger: 0.035, delay: 0.05,
-          onComplete: () => (self.masks || []).forEach(m => { m.style.overflow = "visible"; }) });
-      } });
-    });
+    /* apertura (15/10/2026, v3): titolo, sottotitolo e schermo panoramico sono animati dal CSS (css/site.css, «APERTURA»),
+       che parte al primo disegno della pagina. Prima li animava questo file, che sul telefono arriva anche dopo 3 s:
+       il titolo compariva, spariva e ripartiva («si rimette a posto e rovina il momento di apertura»). Qui non si toccano. */
+    document.querySelectorAll(".hero [data-chars], .hero [data-split], .a-hero [data-chars], .a-hero [data-split]").forEach(el => { el.removeAttribute("data-split"); el.removeAttribute("data-chars"); });
+    document.querySelectorAll("[data-chars]").forEach(el => { el.style.visibility = "visible"; });
 
     /* titoli di sezione: righe che salgono da una maschera */
     document.querySelectorAll("[data-split]").forEach(el => {
       const inHero = el.closest(".hero, .a-hero");
+      // titolo delle pagine di sezione già mostrato dalla protezione CSS (telefono lento): non si rianima
+      if (el.closest(".s-head") && performance.now() > 1300) { el.style.visibility = "visible"; el.style.animation = "none"; return; }
       let played = false;
       SplitText.create(el, { type: "words,lines", mask: "lines", linesClass: "line", autoSplit: true,
         onSplit(self) {
@@ -83,24 +79,22 @@
     /* elementi che compaiono: salgono, si raddrizzano e si mettono a fuoco */
     ScrollTrigger.batch("[data-reveal]", {
       start: "top 97%",
-      onEnter: els => gsap.to(els.filter(e => !e.closest(".hero, .a-hero")), { opacity: 1, y: 0, duration: 0.8, ease, stagger: 0.06, overwrite: true })
+      onEnter: els => gsap.to(els.filter(e => !e.closest(".hero, .a-hero")), { opacity: 1, y: 0, duration: 0.8, ease, stagger: 0.06, overwrite: "auto" })   // "auto": non cancella le rotazioni 3D sugli stessi elementi
     });
-    document.querySelectorAll(".hero [data-reveal], .a-hero [data-reveal]").forEach(el =>
-      gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease, delay: 0.05 + (+el.dataset.reveal || 0) * 0.6 }));
+
 
     /* hero: zoom d'ingresso, parallasse leggera e (col mouse) profondità */
     document.querySelectorAll(".hero-media").forEach(m => {
       const img = m.querySelector("img"), sec = m.parentElement;
-      gsap.fromTo(img, { scale: 1.12 }, { scale: 1.02, duration: 2.2, ease });
-      // il momento firma (15/10/2026): l'immagine si apre come uno schermo panoramico che diventa a tutta pagina.
-      // L'immagine è visibile da subito (nessuna attesa) e la parallasse sotto non cambia.
-      gsap.fromTo(m, { clipPath: "inset(17% 0% 17% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.5, ease: "expo.inOut", delay: 0.05, clearProps: "clipPath" });
+
+      // il momento firma (schermo panoramico che si apre) è nel CSS: parte subito anche sul telefono lento
       // 3D (15/10/2026): scorrendo, lo schermo si inclina all'indietro e si allontana come in una sala; il testo sale davanti.
       // Accompagna lo scorrimento (scrub), non lo blocca mai.
-      const copy = sec.querySelector(".hero-content");
+      const copy = sec.querySelector(".hero-content"), telefono = matchMedia("(max-width: 760px)").matches;
       gsap.set(sec, { perspective: 1100 });
       gsap.timeline({ scrollTrigger: { trigger: sec, start: "top top", end: "bottom top", scrub: 0.5 } })
-        .to(m, { yPercent: 6, rotationX: 10, scale: 0.88, borderRadius: 30, transformOrigin: "50% 100%", ease: "none" }, 0)
+        .to(m, telefono ? { rotationX: 12, scale: 0.9, borderRadius: 26, transformOrigin: "50% 100%", ease: "none" }
+                        : { yPercent: 4, rotationX: 18, scale: 0.8, borderRadius: 34, transformOrigin: "50% 100%", ease: "none" }, 0)
         .to(copy, { y: -60, ease: "none" }, 0);
       if (mouse) {   // col mouse: l'immagine ruota di pochi gradi e il testo si sposta al contrario (profondità)
         gsap.set(img, { transformPerspective: 1200 });
@@ -115,7 +109,15 @@
     document.querySelectorAll(".showing-grid").forEach(g => {
       const items = [...g.children], mid = (items.length - 1) / 2;
       // sul telefono il carosello si scorre col dito: solo una comparsa leggera, niente trasformazioni che restano attaccate
-      if (matchMedia("(max-width: 960px)").matches) { gsap.from(items, { opacity: 0, y: 24, duration: 0.6, ease, stagger: 0.05, clearProps: "transform,opacity", scrollTrigger: { trigger: g, start: "top 92%" } }); return; }
+      if (matchMedia("(max-width: 960px)").matches) {
+        // coverflow: la locandina al centro è dritta, quelle ai lati ruotano in 3D e si allontanano (calcolato a ogni fotogramma di scorrimento)
+        let att = false; const aggiorna = () => { att = false; const c = g.scrollLeft + g.clientWidth / 2;
+          items.forEach(it => { const d = Math.max(-1, Math.min(1, (it.offsetLeft + it.offsetWidth / 2 - c) / g.clientWidth));
+            it.style.transform = `perspective(900px) rotateY(${(-d * 38).toFixed(2)}deg) translateZ(${(-Math.abs(d) * 90).toFixed(1)}px)`; }); };
+        g.addEventListener("scroll", () => { if (!att) { att = true; requestAnimationFrame(aggiorna); } }, { passive: true });
+        addEventListener("resize", aggiorna, { passive: true });
+        gsap.from(items, { opacity: 0, rotationY: -70, z: -200, transformPerspective: 900, duration: 1, ease, stagger: 0.07, scrollTrigger: { trigger: g, start: "top 90%" }, onComplete: aggiorna });
+        aggiorna(); return; }
       gsap.from(items, { rotationY: -62, rotationX: 10, z: -280, x: -30, opacity: 0, transformPerspective: 1000, transformOrigin: "0% 50%",
         duration: 1.3, ease, stagger: 0.08, clearProps: "transform,opacity", scrollTrigger: { trigger: g, start: "top 85%" } });
     });
@@ -125,6 +127,11 @@
       { rotationX: 0, scale: 1, ease: "none", scrollTrigger: { trigger: f, start: "top bottom", end: "center 60%", scrub: 0.5 } }));
     gsap.utils.toArray(".tiles .tile").forEach((t, i) => gsap.fromTo(t, { rotationX: -32, z: -140, transformPerspective: 900, transformOrigin: "50% 100%" },
       { rotationX: 0, z: 0, duration: 1.3, ease, delay: (i % 3) * 0.09, scrollTrigger: { trigger: t, start: "top 94%" } }));
+
+    gsap.utils.toArray(".rows .row").forEach((r, i) => gsap.fromTo(r, { rotationX: -70, transformPerspective: 800, transformOrigin: "50% 0%" },
+      { rotationX: 0, duration: 1.1, ease, delay: i * 0.07, scrollTrigger: { trigger: r, start: "top 95%" } }));
+    gsap.utils.toArray(".tcards .tcard").forEach((r, i) => gsap.fromTo(r, { rotationX: 35, z: -80, transformPerspective: 900, transformOrigin: "50% 100%" },
+      { rotationX: 0, z: 0, duration: 1.1, ease, delay: (i % 2) * 0.08, scrollTrigger: { trigger: r, start: "top 96%" }, clearProps: "transform" }));
 
     /* immagini negli articoli: apertura morbida */
     gsap.utils.toArray("[data-clip]").forEach(f => {
