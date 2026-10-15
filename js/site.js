@@ -95,10 +95,19 @@
       // il momento firma (15/10/2026): l'immagine si apre come uno schermo panoramico che diventa a tutta pagina.
       // L'immagine è visibile da subito (nessuna attesa) e la parallasse sotto non cambia.
       gsap.fromTo(m, { clipPath: "inset(17% 0% 17% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.5, ease: "expo.inOut", delay: 0.05, clearProps: "clipPath" });
-      gsap.to(m, { yPercent: 12, ease: "none", scrollTrigger: { trigger: sec, start: "top top", end: "bottom top", scrub: true } });
-      if (mouse) {
-        const xTo = gsap.quickTo(img, "x", { duration: 1.2, ease: "power3" }), yTo = gsap.quickTo(img, "y", { duration: 1.2, ease: "power3" });
-        sec.addEventListener("mousemove", e => { xTo((e.clientX / innerWidth - 0.5) * -24); yTo((e.clientY / innerHeight - 0.5) * -16); });
+      // 3D (15/10/2026): scorrendo, lo schermo si inclina all'indietro e si allontana come in una sala; il testo sale davanti.
+      // Accompagna lo scorrimento (scrub), non lo blocca mai.
+      const copy = sec.querySelector(".hero-content");
+      gsap.set(sec, { perspective: 1100 });
+      gsap.timeline({ scrollTrigger: { trigger: sec, start: "top top", end: "bottom top", scrub: 0.5 } })
+        .to(m, { yPercent: 6, rotationX: 10, scale: 0.88, borderRadius: 30, transformOrigin: "50% 100%", ease: "none" }, 0)
+        .to(copy, { y: -60, ease: "none" }, 0);
+      if (mouse) {   // col mouse: l'immagine ruota di pochi gradi e il testo si sposta al contrario (profondità)
+        gsap.set(img, { transformPerspective: 1200 });
+        const ry = gsap.quickTo(img, "rotationY", { duration: 1.2, ease: "power3" }), rx = gsap.quickTo(img, "rotationX", { duration: 1.2, ease: "power3" }),
+          cx = gsap.quickTo(copy, "x", { duration: 1.4, ease: "power3" });
+        sec.addEventListener("mousemove", e => { const px = e.clientX / innerWidth - 0.5, py = e.clientY / innerHeight - 0.5; ry(px * 5); rx(-py * 4); cx(px * -14); });
+        sec.addEventListener("mouseleave", () => { ry(0); rx(0); cx(0); });
       }
     });
 
@@ -107,20 +116,27 @@
       const items = [...g.children], mid = (items.length - 1) / 2;
       // sul telefono il carosello si scorre col dito: solo una comparsa leggera, niente trasformazioni che restano attaccate
       if (matchMedia("(max-width: 960px)").matches) { gsap.from(items, { opacity: 0, y: 24, duration: 0.6, ease, stagger: 0.05, clearProps: "transform,opacity", scrollTrigger: { trigger: g, start: "top 92%" } }); return; }
-      gsap.from(items, { y: 120, x: (i) => (mid - i) * 40, rotate: (i) => (i - mid) * 5, opacity: 0, scale: 0.9, duration: 1.2, ease, stagger: 0.06, clearProps: "transform,opacity",
-        scrollTrigger: { trigger: g, start: "top 90%" } });
+      gsap.from(items, { rotationY: -62, rotationX: 10, z: -280, x: -30, opacity: 0, transformPerspective: 1000, transformOrigin: "0% 50%",
+        duration: 1.3, ease, stagger: 0.08, clearProps: "transform,opacity", scrollTrigger: { trigger: g, start: "top 85%" } });
     });
+
+    /* 3D: l'immagine della recensione in evidenza si raddrizza mentre scorri; le curiosità si alzano come schermi */
+    document.querySelectorAll(".feat-img").forEach(f => gsap.fromTo(f, { rotationX: 14, scale: 0.94, transformPerspective: 1100, transformOrigin: "50% 100%" },
+      { rotationX: 0, scale: 1, ease: "none", scrollTrigger: { trigger: f, start: "top bottom", end: "center 60%", scrub: 0.5 } }));
+    gsap.utils.toArray(".tiles .tile").forEach((t, i) => gsap.fromTo(t, { rotationX: -32, z: -140, transformPerspective: 900, transformOrigin: "50% 100%" },
+      { rotationX: 0, z: 0, duration: 1.3, ease, delay: (i % 3) * 0.09, scrollTrigger: { trigger: t, start: "top 94%" } }));
 
     /* immagini negli articoli: apertura morbida */
     gsap.utils.toArray("[data-clip]").forEach(f => {
       const img = f.querySelector("img"), st = { trigger: f, start: "top 95%" };
       gsap.fromTo(f, { clipPath: "inset(6% 4% 6% 4% round 22px)" }, { clipPath: "inset(0% 0% 0% 0% round 22px)", ease: "power3.out", duration: 1.1, scrollTrigger: st });
       if (img) gsap.fromTo(img, { scale: 1.1 }, { scale: 1, ease: "power3.out", duration: 1.3, scrollTrigger: st });
+      gsap.fromTo(f, { rotationX: 16, transformPerspective: 1100, transformOrigin: "50% 100%" }, { rotationX: 0, ease: "power3.out", duration: 1.3, scrollTrigger: st });
     });
 
     /* citazione: parole una alla volta */
     document.querySelectorAll(".pull").forEach(el => {
-      SplitText.create(el, { type: "words", mask: "words", autoSplit: true, onSplit: self =>
+      SplitText.create(el, { type: "words", mask: "words", aria: "none", autoSplit: true, onSplit: self =>
         gsap.from(self.words, { yPercent: 100, duration: 0.9, ease, stagger: 0.04, scrollTrigger: { trigger: el, start: "top 90%" } }) });
     });
 
@@ -270,10 +286,10 @@ document.querySelectorAll(".s-grid[data-more]").forEach(g => {
   function prepara() { if (!pronta) pronta = creaImmagine().catch(() => null); return pronta; }
   // preparazione silenziosa: quando il lettore è a metà articolo o vicino ai tasti di condivisione
   const box = document.getElementById("condividi");
-  if ("IntersectionObserver" in window && box) { const io = new IntersectionObserver(e => { if (e.some(x => x.isIntersecting)) { prepara(); io.disconnect(); } }, { rootMargin: "1200px 0px" }); io.observe(box); }
-  (window.requestIdleCallback || (f => setTimeout(f, 2500)))(() => prepara());
-
-  let risultato = null; prepara().then(r => { risultato = r; });
+  if ("IntersectionObserver" in window && box) { const io = new IntersectionObserver(e => { if (e.some(x => x.isIntersecting)) { prepara().then(r => { risultato = r; }); io.disconnect(); } }, { rootMargin: "1200px 0px" }); io.observe(box); }
+  let risultato = null;
+  // chi tocca un tasto di condivisione prima di arrivare in fondo: l'immagine si prepara già al primo contatto
+  document.addEventListener("pointerdown", e => { if (e.target.closest("[data-share]")) prepara().then(r => { risultato = r; }); }, { passive: true });
   async function storia() {
     const copiato = copiaSubito();
     const guida = (copiato ? "Link copiato. " : "") + "In Instagram tocca l'icona degli sticker → Link → incolla il link dell'articolo.";
