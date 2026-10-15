@@ -16,7 +16,7 @@
   --ink-2: #a1a1a6;
   --ink-3: #8e8e93;
   --line: rgba(255,255,255,.1);
-  --accent: #e0302a;
+  --accent: #ec4134;   /* 15/10/2026: era #e0302a, contrasto 4,36 sul nero; ora 5,06 (testi piccoli leggibili) */
   --radius: 22px;
   --ease: cubic-bezier(.2,.8,.2,1);
   --pad: clamp(20px, 4vw, 64px);
@@ -723,3 +723,12 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
   .hero h1, .hero .hero-title, .a-hero h1 { text-shadow: 0 2px 24px rgba(0,0,0,.55); }
   .mod-title { font-size: clamp(36px, 10vw, 44px); }
 }
+/* 3D (15/10/2026): profondità leggera al passaggio del mouse, sempre senza sfocature e senza nascondere testo */
+.hero-media, .a-hero .hero-media { will-change: transform; }
+.rows .row-img { transition: transform .7s var(--ease), box-shadow .7s var(--ease); transform-origin: 0% 50%; }
+@media (hover: hover) and (pointer: fine) {
+  .rows .row:hover .row-img { transform: perspective(700px) rotateY(-14deg) translateZ(10px); box-shadow: 18px 18px 40px -16px rgba(0,0,0,.8); }
+  .tcards .tcard { transition: transform .6s var(--ease); } .tcards .tcard:hover { transform: perspective(900px) translateZ(14px) rotateX(2deg); }
+  .tiles .tile { transition: box-shadow .6s var(--ease); } .tiles .tile:hover { box-shadow: 0 30px 60px -28px rgba(0,0,0,.9); }
+}
+@media (prefers-reduced-motion: reduce) { .rows .row:hover .row-img, .tcards .tcard:hover { transform: none !important; } }
