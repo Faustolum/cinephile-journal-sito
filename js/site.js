@@ -110,15 +110,21 @@
       const items = [...g.children], mid = (items.length - 1) / 2;
       // sul telefono il carosello si scorre col dito: solo una comparsa leggera, niente trasformazioni che restano attaccate
       if (matchMedia("(max-width: 960px)").matches) {
-        // coverflow: la locandina al centro è dritta, quelle ai lati ruotano in 3D e si allontanano (calcolato a ogni fotogramma di scorrimento)
-        let att = false; const aggiorna = () => { att = false; const c = g.scrollLeft + g.clientWidth / 2;
+        // coverflow (v2, 15/10/2026 sera: «si bucano e vibrano»): UNA sola cosa muove le locandine, questo calcolo.
+        // Niente animazione d'entrata in 3D sopra (si contendevano la trasformazione), niente profondità negativa (si attraversavano),
+        // ricalcolo solo se cambia la LARGHEZZA (scendendo, la barra di Safari cambia l'altezza e faceva ripartire tutto).
+        g.classList.add("coverflow"); let att = false, largo = innerWidth;
+        const aggiorna = () => { att = false; const c = g.scrollLeft + g.clientWidth / 2;
           items.forEach(it => { const d = Math.max(-1, Math.min(1, (it.offsetLeft + it.offsetWidth / 2 - c) / g.clientWidth));
-            it.style.transform = `perspective(900px) rotateY(${(-d * 38).toFixed(2)}deg) translateZ(${(-Math.abs(d) * 90).toFixed(1)}px)`; }); };
+            it.style.transform = `rotateY(${(-d * 26).toFixed(1)}deg) scale(${(1 - Math.abs(d) * 0.08).toFixed(3)})`;
+            it.style.transformOrigin = d > 0 ? "0% 50%" : "100% 50%";   // ruota attorno al bordo verso il centro: il bordo che si avvicina non invade la locandina vicina
+            it.style.zIndex = String(100 - Math.round(Math.abs(d) * 50)); }); };
         g.addEventListener("scroll", () => { if (!att) { att = true; requestAnimationFrame(aggiorna); } }, { passive: true });
-        addEventListener("resize", aggiorna, { passive: true });
-        gsap.from(items, { opacity: 0, rotationY: -70, z: -200, transformPerspective: 900, duration: 1, ease, stagger: 0.07, scrollTrigger: { trigger: g, start: "top 90%" }, onComplete: aggiorna });
-        aggiorna(); return; }
-      gsap.from(items, { rotationY: -62, rotationX: 10, z: -280, x: -30, opacity: 0, transformPerspective: 1000, transformOrigin: "0% 50%",
+        addEventListener("resize", () => { if (innerWidth !== largo) { largo = innerWidth; aggiorna(); } }, { passive: true });
+        aggiorna();
+        gsap.from(g, { opacity: 0, duration: 0.8, ease: "power2.out", scrollTrigger: { trigger: g, start: "top 92%" } });   // entrata: solo dissolvenza del gruppo
+        return; }
+      gsap.from(items, { rotationY: -45, opacity: 0, transformPerspective: 1200, transformOrigin: "0% 50%",   // niente profondità negativa: le locandine non si attraversano
         duration: 1.3, ease, stagger: 0.08, clearProps: "transform,opacity", scrollTrigger: { trigger: g, start: "top 85%" } });
     });
 
