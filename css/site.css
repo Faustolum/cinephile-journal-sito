@@ -763,3 +763,32 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
   .showing-grid.coverflow { perspective: 1000px; perspective-origin: 50% 40%; }
   .showing-grid.coverflow .ticket { transform-origin: 50% 50%; backface-visibility: hidden; will-change: transform; position: relative; }
 }
+
+/* banner del consenso ai cookie di statistica (26/10/2026, js/consenso.js): in basso, sopra tutto, Rifiuta e Accetta della stessa taglia */
+.consenso { position: fixed; z-index: 9000; left: 50%; bottom: 20px; width: min(560px, calc(100% - 32px)); transform: translate(-50%, 24px); opacity: 0;
+  background: var(--bg-2); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px 20px; box-shadow: 0 24px 60px rgba(0,0,0,.55);
+  transition: opacity .4s var(--ease), transform .4s var(--ease); font: 400 15px/1.5 "Inter", sans-serif; }
+.consenso.on { opacity: 1; transform: translate(-50%, 0); }
+.consenso p { margin: 0 0 14px; color: var(--ink-2); padding-right: 28px; }
+.consenso .consenso-t { font-weight: 650; font-size: 17px; color: var(--ink); margin-bottom: 6px; }
+.consenso a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.consenso-b { display: flex; gap: 10px; }
+.consenso-b .btn { flex: 1 1 0; justify-content: center; padding: 14px 20px; }
+.consenso-x { position: absolute; top: 10px; right: 12px; width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); font: 400 26px/1 "Inter", sans-serif; cursor: pointer; }
+.consenso-x:hover, .consenso-x:focus-visible { color: var(--ink); background: var(--bg-3); }
+@media (max-width: 560px) { .consenso { bottom: 16px; padding: 18px 18px 16px; font-size: 14px; } }
+@media (prefers-reduced-motion: reduce) { .consenso { transition: none; } }
+.legal-tab { overflow-x: auto; margin: 1em 0 1.5em; }
+.legal-tab table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; }
+.legal-tab th, .legal-tab td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.legal-tab th { color: var(--ink-2); font-weight: 600; }
+.legal-tab td:first-child { font-family: ui-monospace, Menlo, monospace; white-space: nowrap; }
+.legal a.btn { text-decoration: none; margin-top: 6px; }
+@media (max-width: 600px) {
+  .legal-tab table { min-width: 0; }
+  .legal-tab thead { display: none; }
+  .legal-tab tr, .legal-tab td { display: block; }
+  .legal-tab tr { border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; background: var(--bg-2); }
+  .legal-tab td { border: 0; padding: 3px 0 7px; white-space: normal !important; }
+  .legal-tab td::before { content: attr(data-l); display: block; font: 600 11px/1.4 "Inter", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+}
