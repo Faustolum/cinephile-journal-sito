@@ -50,10 +50,9 @@
     if (box) return;
     box = document.createElement("div");
     box.className = "consenso"; box.setAttribute("role", "dialog"); box.setAttribute("aria-label", "Cookie di statistica");
+    // testo corto e generico (Floriano, 26/10: «più semplice, non bisogna dire troppe cose alla gente»); i dettagli sono in cookie.html
     box.innerHTML = '<button class="consenso-x" type="button" aria-label="Chiudi: rifiuto">&times;</button>' +
-      '<p class="consenso-t">Contiamo le visite?</p>' +
-      '<p>Con il tuo permesso usiamo Google Analytics per sapere quante persone leggono il sito e quali articoli piacciono di più. ' +
-      'Niente pubblicità, niente profilazione. <a href="cookie.html">Dettagli</a></p>' +
+      '<p>Usiamo i cookie, anche di terze parti, per migliorare il sito. Puoi accettarli o rifiutarli. <a href="cookie.html">Dettagli</a></p>' +
       '<div class="consenso-b"><button class="btn ghost" type="button" data-s="no">Rifiuta</button><button class="btn" type="button" data-s="si">Accetta</button></div>';
     box.addEventListener("click", function (e) {
       var t = e.target.closest("[data-s], .consenso-x"); if (!t) return;
