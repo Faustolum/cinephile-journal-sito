@@ -22,7 +22,10 @@
     gtag("consent", "default", { analytics_storage: "granted", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
     gtag("set", "ads_data_redaction", true);
     gtag("js", new Date());
-    gtag("config", ID, { allow_google_signals: false, allow_ad_personalization_signals: false });
+    // indirizzi corti (es. /ig dalla bio di Instagram, 27/10/2026): la pagina è la home vera, la provenienza va ad Analytics così
+    var u = (me.dataset.utm || "").split("|"), extra = {};
+    if (u[0]) extra.page_location = location.origin + "/?utm_source=" + u[0] + "&utm_medium=" + (u[1] || "") + "&utm_campaign=" + (u[2] || "");
+    gtag("config", ID, Object.assign({ allow_google_signals: false, allow_ad_personalization_signals: false }, extra));
     var s = document.createElement("script"); s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=" + ID;
     document.head.appendChild(s);
   }
