@@ -32,11 +32,14 @@
   /* ---------- navigazione: vetro, si nasconde scendendo e ricompare salendo ---------- */
   const nav = document.querySelector(".nav");
   if (nav) {
-    let last = 0;
+    // 27/10/2026 (Floriano: «le animazioni fanno fare un saltello fastidioso»): la barra cambia stato solo dopo 12 px nella
+    // stessa direzione; il rimbalzo dell'iPhone in cima (scrollY negativo) e i piccoli ritorni dello scorrimento col dito non la muovono
+    let last = Math.max(0, scrollY);
     addEventListener("scroll", () => {
-      const y = scrollY;
+      const y = Math.max(0, scrollY), d = y - last;
       nav.classList.toggle("scrolled", y > 40);
-      nav.classList.toggle("hide", y > last && y > 400 && !root.classList.contains("menu-open"));
+      if (Math.abs(d) < 12) return;
+      nav.classList.toggle("hide", d > 0 && y > 400 && !root.classList.contains("menu-open"));
       last = y;
     }, { passive: true });
   }
@@ -47,6 +50,10 @@
   gsap.registerPlugin(ScrollTrigger, SplitText);
   ScrollTrigger.config({ ignoreMobileResize: true });
   const ease = "expo.out";
+  // telefoni e tablet (niente mouse): solo comparse morbide in dissolvenza. Le rotazioni 3D, i sipari e gli effetti che seguono
+  // lo scorrimento col ritardo (scrub) col dito sembravano scatti (27/10/2026). Col mouse resta tutto com'era.
+  const tocco = !mouse;
+  const comparsa = (els, st, extra) => gsap.fromTo(els, { opacity: 0, y: 18 }, Object.assign({ opacity: 1, y: 0, duration: 0.7, ease: "power2.out", clearProps: "transform", scrollTrigger: st }, extra || {}));
 
   document.fonts.ready.then(() => ScrollTrigger.refresh());
   (() => {
@@ -91,6 +98,7 @@
       // 3D (15/10/2026): scorrendo, lo schermo si inclina all'indietro e si allontana come in una sala; il testo sale davanti.
       // Accompagna lo scorrimento (scrub), non lo blocca mai.
       const copy = sec.querySelector(".hero-content"), telefono = matchMedia("(max-width: 760px)").matches;
+      if (tocco) return;
       gsap.set(sec, { perspective: 1100 });
       gsap.timeline({ scrollTrigger: { trigger: sec, start: "top top", end: "bottom top", scrub: 0.5 } })
         .to(m, telefono ? { rotationX: 12, scale: 0.9, borderRadius: 26, transformOrigin: "50% 100%", ease: "none" }
@@ -129,6 +137,11 @@
     });
 
     /* 3D: l'immagine della recensione in evidenza si raddrizza mentre scorri; le curiosità si alzano come schermi */
+    if (tocco) {
+      document.querySelectorAll(".feat-img").forEach(f => comparsa(f, { trigger: f, start: "top 95%" }));
+      gsap.utils.toArray(".tiles .tile, .rows .row, .tcards .tcard").forEach((t, i) => comparsa(t, { trigger: t, start: "top 96%" }, { delay: (i % 2) * 0.06 }));
+      gsap.utils.toArray("[data-clip]").forEach(f => comparsa(f, { trigger: f, start: "top 95%" }));
+    } else {
     document.querySelectorAll(".feat-img").forEach(f => gsap.fromTo(f, { rotationX: 14, scale: 0.94, transformPerspective: 1100, transformOrigin: "50% 100%" },
       { rotationX: 0, scale: 1, ease: "none", scrollTrigger: { trigger: f, start: "top bottom", end: "center 60%", scrub: 0.5 } }));
     gsap.utils.toArray(".tiles .tile").forEach((t, i) => gsap.fromTo(t, { rotationX: -32, z: -140, transformPerspective: 900, transformOrigin: "50% 100%" },
@@ -146,6 +159,7 @@
       if (img) gsap.fromTo(img, { scale: 1.1 }, { scale: 1, ease: "power3.out", duration: 1.3, scrollTrigger: st });
       gsap.fromTo(f, { rotationX: 16, transformPerspective: 1100, transformOrigin: "50% 100%" }, { rotationX: 0, ease: "power3.out", duration: 1.3, scrollTrigger: st });
     });
+    }
 
     /* citazione: parole una alla volta */
     document.querySelectorAll(".pull").forEach(el => {
@@ -165,7 +179,7 @@
     if (bar) gsap.to(bar, { scaleX: 1, ease: "none", scrollTrigger: { trigger: "article", start: "top top", end: "bottom bottom", scrub: true } });
 
     /* merch: leggero parallasse */
-    document.querySelectorAll(".mt-art .mock, .product-art .mock").forEach(m => gsap.fromTo(m, { y: 24 }, { y: -24, ease: "none", scrollTrigger: { trigger: m, scrub: true } }));
+    if (!tocco) document.querySelectorAll(".mt-art .mock, .product-art .mock").forEach(m => gsap.fromTo(m, { y: 24 }, { y: -24, ease: "none", scrollTrigger: { trigger: m, scrub: true } }));
 
     ScrollTrigger.refresh();
   })();
