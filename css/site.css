@@ -765,10 +765,13 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
 }
 
 /* banner del consenso ai cookie di statistica (26/10/2026, js/consenso.js): in basso, sopra tutto, Rifiuta e Accetta della stessa taglia */
-.consenso { position: fixed; z-index: 9000; left: 50%; bottom: 20px; width: min(560px, calc(100% - 32px)); transform: translate(-50%, 24px); opacity: 0;
+/* 27/10/2026 (Floriano: «sul telefono il banner saltella come se facesse scatti»): niente centratura con translate(-50%) e livello
+   separato (translate3d + will-change): quando la barra di Instagram/Safari compare e sparisce il banner non viene ricalcolato a scatti */
+.consenso { position: fixed; z-index: 9000; left: 16px; right: 16px; margin: 0 auto; max-width: 560px; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translate3d(0, 24px, 0); opacity: 0;
+  will-change: transform, opacity; -webkit-backface-visibility: hidden; backface-visibility: hidden; contain: layout paint;
   background: var(--bg-2); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px 20px; box-shadow: 0 24px 60px rgba(0,0,0,.55);
   transition: opacity .4s var(--ease), transform .4s var(--ease); font: 400 15px/1.5 "Inter", sans-serif; }
-.consenso.on { opacity: 1; transform: translate(-50%, 0); }
+.consenso.on { opacity: 1; transform: translate3d(0, 0, 0); }
 .consenso p { margin: 0 0 14px; color: var(--ink-2); padding-right: 28px; }
 .consenso .consenso-t { font-weight: 650; font-size: 17px; color: var(--ink); margin-bottom: 6px; }
 .consenso a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
@@ -776,7 +779,7 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
 .consenso-b .btn { flex: 1 1 0; justify-content: center; padding: 14px 20px; }
 .consenso-x { position: absolute; top: 10px; right: 12px; width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); font: 400 26px/1 "Inter", sans-serif; cursor: pointer; }
 .consenso-x:hover, .consenso-x:focus-visible { color: var(--ink); background: var(--bg-3); }
-@media (max-width: 560px) { .consenso { bottom: 16px; padding: 18px 18px 16px; font-size: 14px; } }
+@media (max-width: 560px) { .consenso { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); padding: 18px 18px 16px; font-size: 14px; } }
 @media (prefers-reduced-motion: reduce) { .consenso { transition: none; } }
 .legal-tab { overflow-x: auto; margin: 1em 0 1.5em; }
 .legal-tab table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; }
