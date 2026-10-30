@@ -850,3 +850,29 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
   .f-sel label { flex: 1 1 calc(50% - 8px); }
   .f-sel select { min-width: 0; width: 100%; }
 }
+
+/* ===== 30/10/2026: una pagina per serie, con le stagioni (gen.js «SERIE», js/site.js «stagioni») ===== */
+.st-tasti { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 28px; }
+.st-tasti button { font: 600 15px/1 "Inter", sans-serif; padding: 12px 18px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink-2); cursor: pointer; }
+.st-tasti button:hover { color: var(--ink); border-color: rgba(255,255,255,.3); }
+.st-tasti button[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.st-rec { display: grid; grid-template-columns: 1.25fr 1fr; gap: 34px; align-items: center; color: inherit; text-decoration: none; }
+.st-img { border-radius: var(--radius); overflow: hidden; aspect-ratio: 16/9; background: var(--bg-3); }
+.st-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s var(--ease); }
+.st-rec:hover .st-img img { transform: scale(1.04); }
+.st-txt h2 { font: 700 clamp(28px, 3vw, 40px)/1.05 "Inter", sans-serif; letter-spacing: -.03em; margin: 12px 0 12px; }
+.st-txt p { color: var(--ink-2); font: 400 18px/1.5 "Inter", sans-serif; margin: 0 0 22px; }
+.st-vuota { padding: 34px 0 70px; }
+.st-altro { margin: 80px 0 26px; }
+.st-mini { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 24px; font: 500 15px/1.4 "Inter", sans-serif; color: var(--ink-2); }
+.st-mini > span:first-child { margin-right: 4px; }
+.st-mini > span:first-child a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.st-mini > a, .st-mini > strong, .st-mini > .st-no { display: inline-grid; place-items: center; min-width: 36px; height: 36px; padding: 0 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+.st-mini > strong { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.st-mini > .st-no { opacity: .35; }
+@media (max-width: 960px) {
+  .st-rec { grid-template-columns: 1fr; gap: 18px; }
+  .st-tasti { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-left: calc(-1 * var(--pad)); margin-right: calc(-1 * var(--pad)); padding: 0 var(--pad); }
+  .st-tasti::-webkit-scrollbar { display: none; }
+  .st-tasti button { flex: 0 0 auto; }
+}
