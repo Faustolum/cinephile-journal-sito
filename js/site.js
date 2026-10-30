@@ -371,3 +371,16 @@ document.querySelectorAll("form[data-filtri]").forEach(f => {
   const q = new URLSearchParams(location.search); Object.keys(stato).forEach(k => { stato[k] = q.get(k) || ""; });
   applica(false);
 });
+
+/* ---------- stagioni delle serie (30/10/2026, Floriano: «cliccando su 1 stagione c'è la recensione, 2 stagione e così via»): la stagione scelta va
+   nell'indirizzo (#stagione-2), così si può mandare a un amico ---------- */
+document.querySelectorAll("[data-stagioni]").forEach(box => {
+  const tasti = [...box.querySelectorAll("[data-s]")], pannelli = [...box.querySelectorAll(".st-pannello")];
+  const scegli = (n, scrivi) => {
+    tasti.forEach(t => t.setAttribute("aria-selected", String(t.dataset.s === n)));
+    pannelli.forEach(p => { p.hidden = p.id !== "st" + n; });
+    if (scrivi) history.replaceState(null, "", "#stagione-" + n);
+  };
+  tasti.forEach(t => t.addEventListener("click", () => scegli(t.dataset.s, true)));
+  const h = location.hash.match(/^#stagione-(\d+)$/); if (h && tasti.some(t => t.dataset.s === h[1])) scegli(h[1], false);
+});
