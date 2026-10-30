@@ -876,3 +876,7 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
   .st-tasti::-webkit-scrollbar { display: none; }
   .st-tasti button { flex: 0 0 auto; }
 }
+.st-it { margin: 10px 0 0; font: 500 17px/1.4 "Inter", sans-serif; color: var(--ink-2); } .st-it strong { color: var(--ink); }
+.st-titolo { font: 700 clamp(24px, 2.4vw, 32px)/1.1 "Inter", sans-serif; letter-spacing: -.02em; margin: 0 0 10px; }
+.st-trama { max-width: 70ch; color: var(--ink-2); font: 400 18px/1.55 "Inter", sans-serif; margin: 0 0 26px; }
+.st-txt h3 { font: 700 clamp(24px, 2.4vw, 32px)/1.1 "Inter", sans-serif; letter-spacing: -.02em; margin: 12px 0 12px; }
