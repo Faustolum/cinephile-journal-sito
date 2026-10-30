@@ -68,7 +68,8 @@
     document.querySelectorAll("[data-split]").forEach(el => {
       const inHero = el.closest(".hero, .a-hero");
       // titolo delle pagine di sezione già mostrato dalla protezione CSS (telefono lento): non si rianima
-      if (el.closest(".s-head") && performance.now() > 1300) { el.style.visibility = "visible"; el.style.animation = "none"; return; }
+      // 30/10/2026: il titolo delle pagine di sezione non si anima più (si vedeva dopo 1,5 s e a metà salita sembrava tagliato)
+      if (el.closest(".s-head")) { el.style.visibility = "visible"; el.style.animation = "none"; return; }
       let played = false;
       SplitText.create(el, { type: "words,lines", mask: "lines", linesClass: "line", autoSplit: true,
         onSplit(self) {
@@ -334,3 +335,39 @@ document.querySelectorAll(".s-grid[data-more]").forEach(g => {
     if (k === "storia") storia(); else if (k === "invia") invia(); else if (k === "copia") copia();
     else if (k === "menu") { if (navigator.share) invia(); else document.getElementById("condividi").scrollIntoView({ behavior: "smooth", block: "center" }); } });
 })();
+
+/* ---------- filtri di Film e Serie TV (30/10/2026, Floriano: «più filtrabile deve essere») ----------
+   Tipo, genere, anno di uscita e dove vederlo, tutti insieme. Lo stato va nell'indirizzo (/film?genere=Horror&anno=2026): si può mandare a un amico.
+   24 risultati alla volta, poi «Mostra altri». */
+document.querySelectorAll("form[data-filtri]").forEach(f => {
+  const grid = f.parentElement.querySelector(".catalogo"); if (!grid) return;
+  const cards = [...grid.children], vuoto = f.parentElement.querySelector(".f-vuoto"), conto = f.querySelector(".f-conto"), step = 24;
+  const stato = { tipo: "", genere: "", anno: "", dove: "" }; let fino = step;
+  const piu = document.createElement("div"); piu.className = "more-btn"; piu.innerHTML = `<button class="btn ghost" type="button">Mostra altri</button>`; grid.after(piu);
+  const ha = (lista, v) => ("|" + lista + "|").includes("|" + v + "|");
+  const passa = c => { const d = c.dataset;
+    return (!stato.tipo || d.tipo === stato.tipo) && (!stato.genere || ha(d.generi, stato.genere)) && (!stato.dove || ha(d.dove, stato.dove)) &&
+      (!stato.anno || (stato.anno[0] === "d" ? Math.floor(+d.anno / 10) * 10 === +stato.anno.slice(1) : d.anno === stato.anno)); };
+  const applica = scrivi => {
+    let n = 0;
+    cards.forEach(c => { const ok = passa(c); c.hidden = !ok; if (ok) { n++; c.classList.toggle("oltre", n > fino); c.style.opacity = 1; } });
+    conto.textContent = n === 1 ? "1 articolo" : n + " articoli";
+    if (vuoto) vuoto.hidden = n > 0;
+    piu.hidden = n <= fino;
+    const attivi = Object.values(stato).some(Boolean);
+    f.querySelectorAll(".f-reset").forEach(b => { b.hidden = !attivi; });
+    f.querySelectorAll("[data-tipo]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tipo === stato.tipo)));
+    f.querySelectorAll("select").forEach(s => { s.value = stato[s.name]; });
+    if (scrivi) { const q = new URLSearchParams(); Object.keys(stato).forEach(k => { if (stato[k]) q.set(k, stato[k]); });
+      history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "")); }
+  };
+  const azzera = () => { Object.keys(stato).forEach(k => { stato[k] = ""; }); fino = step; applica(true); };
+  f.addEventListener("submit", e => e.preventDefault());
+  f.querySelectorAll("[data-tipo]").forEach(b => b.addEventListener("click", () => { stato.tipo = b.dataset.tipo; fino = step; applica(true); }));
+  f.querySelectorAll("select").forEach(s => s.addEventListener("change", () => { stato[s.name] = s.value; fino = step; applica(true); }));
+  f.querySelectorAll(".f-reset").forEach(b => b.addEventListener("click", azzera));
+  if (vuoto) vuoto.querySelectorAll(".f-reset").forEach(b => b.addEventListener("click", azzera));
+  piu.querySelector("button").addEventListener("click", () => { fino += step; applica(false); });
+  const q = new URLSearchParams(location.search); Object.keys(stato).forEach(k => { stato[k] = q.get(k) || ""; });
+  applica(false);
+});
