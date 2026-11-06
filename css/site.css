@@ -781,6 +781,13 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
 .consenso-x:hover, .consenso-x:focus-visible { color: var(--ink); background: var(--bg-3); }
 @media (max-width: 560px) { .consenso { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); padding: 18px 18px 16px; font-size: 14px; } }
 @media (prefers-reduced-motion: reduce) { .consenso { transition: none; } }
+/* 6/11/2026 (Floriano, video dall'iPhone dentro Instagram: «saltava così il banner»): misurato sul video, salto di circa 90 punti a ogni comparsa delle barre.
+   La causa è l'aggancio al FONDO dello schermo, che cambia con le barre. Sui telefoni il banner si aggancia dall'ALTO a un'altezza che non cambia:
+   la più piccola tra 100svh e l'altezza letta all'apertura (--alto, da consenso.js), così non finisce mai sotto la barra di Instagram. */
+@supports (height: 100svh) { @media (hover: none) and (max-width: 900px) {
+  .consenso { bottom: auto; top: calc(min(100svh, var(--alto, 100svh)) - 12px - env(safe-area-inset-bottom, 0px)); transform: translate3d(0, calc(-100% + 24px), 0); }
+  .consenso.on { transform: translate3d(0, -100%, 0); }
+} }
 .legal-tab { overflow-x: auto; margin: 1em 0 1.5em; }
 .legal-tab table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; }
 .legal-tab th, .legal-tab td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
