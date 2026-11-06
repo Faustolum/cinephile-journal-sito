@@ -61,6 +61,7 @@
       var t = e.target.closest("[data-s], .consenso-x"); if (!t) return;
       scegli(t.dataset.s === "si" ? "si" : "no");
     });
+    box.style.setProperty("--alto", window.innerHeight + "px");   // 6/11: altezza fissata all'apertura, vedi site.css
     document.body.appendChild(box);
     void box.offsetHeight; box.classList.add("on");   // reflow forzato: l'entrata parte anche in una scheda in secondo piano (requestAnimationFrame lì non scatta)
   }
@@ -69,6 +70,7 @@
     var a = e.target.closest("[data-consenso]"); if (!a) return;
     e.preventDefault(); apri();
   });
+  window.addEventListener("orientationchange", function () { setTimeout(function () { if (box) box.style.setProperty("--alto", window.innerHeight + "px"); }, 300); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && box && box.contains(document.activeElement)) scegli("no"); });
 
   var s = leggi();
