@@ -6,7 +6,7 @@
 (function () {
   var me = document.currentScript, ID = me && me.dataset.ga;
   if (!ID || !/^G-[A-Z0-9]+$/.test(ID)) return;
-  var K = "tcj-consenso", SEI_MESI = 182 * 864e5, caricato = false, box = null;
+  var K = "tcj-consenso", SEI_MESI = 182 * 864e5, caricato = false, box = null, sfondo = null;
 
   function leggi() {
     try { var v = JSON.parse(localStorage.getItem(K) || "null"); return v && (v.s === "si" || v.s === "no") && Date.now() - v.t < SEI_MESI ? v.s : null; }
@@ -46,8 +46,10 @@
     chiudi();
   }
   function chiudi() {
-    if (!box) return; var b = box; box = null;
-    b.classList.remove("on"); setTimeout(function () { b.remove(); }, 400);
+    if (!box) return; var b = box, f = sfondo; box = null; sfondo = null;
+    b.classList.remove("on"); f.classList.remove("on");
+    document.documentElement.classList.remove("consenso-aperto");   // la pagina torna a scorrere
+    setTimeout(function () { f.remove(); }, 400);
   }
   function apri() {
     if (box) return;
@@ -61,16 +63,22 @@
       var t = e.target.closest("[data-s], .consenso-x"); if (!t) return;
       scegli(t.dataset.s === "si" ? "si" : "no");
     });
-    box.style.setProperty("--alto", window.innerHeight + "px");   // 6/11: altezza fissata all'apertura, vedi site.css
-    document.body.appendChild(box);
-    void box.offsetHeight; box.classList.add("on");   // reflow forzato: l'entrata parte anche in una scheda in secondo piano (requestAnimationFrame lì non scatta)
+    // 8/11/2026 (scelta di Floriano): sui telefoni finestra al centro sopra la pagina scurita e ferma (vedi site.css): niente scorrimento,
+    // quindi le barre di Safari e di Instagram non cambiano e il banner non salta. Sul computer lo sfondo è solo un contenitore.
+    var telefono = window.matchMedia && matchMedia("(hover: none) and (max-width: 900px)").matches;
+    sfondo = document.createElement("div"); sfondo.className = "consenso-sfondo" + (telefono ? " telefono" : "");
+    sfondo.appendChild(box); document.body.appendChild(sfondo);
+    if (telefono) {
+      document.documentElement.classList.add("consenso-aperto");
+      sfondo.addEventListener("touchmove", function (e) { e.preventDefault(); }, { passive: false });   // iPhone: overflow da solo non basta
+    }
+    void box.offsetHeight; box.classList.add("on"); sfondo.classList.add("on");   // reflow forzato: l'entrata parte anche in una scheda in secondo piano (requestAnimationFrame lì non scatta)
   }
 
   document.addEventListener("click", function (e) {
     var a = e.target.closest("[data-consenso]"); if (!a) return;
     e.preventDefault(); apri();
   });
-  window.addEventListener("orientationchange", function () { setTimeout(function () { if (box) box.style.setProperty("--alto", window.innerHeight + "px"); }, 300); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && box && box.contains(document.activeElement)) scegli("no"); });
 
   var s = leggi();
