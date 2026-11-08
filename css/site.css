@@ -781,13 +781,18 @@ time, .meta, .a-meta, .byline, .voto, .score, .num, table { font-variant-numeric
 .consenso-x:hover, .consenso-x:focus-visible { color: var(--ink); background: var(--bg-3); }
 @media (max-width: 560px) { .consenso { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); padding: 18px 18px 16px; font-size: 14px; } }
 @media (prefers-reduced-motion: reduce) { .consenso { transition: none; } }
-/* 6/11/2026 (Floriano, video dall'iPhone dentro Instagram: «saltava così il banner»): misurato sul video, salto di circa 90 punti a ogni comparsa delle barre.
-   La causa è l'aggancio al FONDO dello schermo, che cambia con le barre. Sui telefoni il banner si aggancia dall'ALTO a un'altezza che non cambia:
-   la più piccola tra 100svh e l'altezza letta all'apertura (--alto, da consenso.js), così non finisce mai sotto la barra di Instagram. */
-@supports (height: 100svh) { @media (hover: none) and (max-width: 900px) {
-  .consenso { bottom: auto; top: calc(min(100svh, var(--alto, 100svh)) - 12px - env(safe-area-inset-bottom, 0px)); transform: translate3d(0, calc(-100% + 24px), 0); }
-  .consenso.on { transform: translate3d(0, -100%, 0); }
-} }
+/* 8/11/2026 (Floriano, foto dall'iPhone in Safari: «continua a saltare… te lo ritrovi in mezzo»; terza volta dopo 27/10 e 6/11).
+   Causa: un banner sospeso sopra la pagina che scorre segue lo schermo, e lo schermo cambia altezza quando le barre di Safari o di
+   Instagram compaiono e spariscono (il 6/11 agganciato a 100svh restava a metà; agganciato in alto copriva logo e menu: «fa un po' schifo»).
+   Scelta di Floriano: sui telefoni FINESTRA AL CENTRO sopra la pagina scurita, e la pagina NON scorre finché non si sceglie: senza
+   scorrimento le barre non cambiano e il banner non può saltare. Niente misure in JavaScript, niente svh. Sul computer resta in basso. */
+.consenso-sfondo.telefono { position: fixed; inset: 0; z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: rgba(0,0,0,0); transition: background .4s var(--ease); touch-action: none; overscroll-behavior: contain; }
+.consenso-sfondo.telefono.on { background: rgba(0,0,0,.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.consenso-sfondo.telefono .consenso { position: relative; left: auto; right: auto; top: auto; bottom: auto; margin: 0; width: 100%; max-width: 420px;
+  transform: translate3d(0, 16px, 0); }
+.consenso-sfondo.telefono .consenso.on { transform: translate3d(0, 0, 0); }
+html.consenso-aperto, html.consenso-aperto body { overflow: hidden; }
 .legal-tab { overflow-x: auto; margin: 1em 0 1.5em; }
 .legal-tab table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; }
 .legal-tab th, .legal-tab td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
